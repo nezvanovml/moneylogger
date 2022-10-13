@@ -1,1 +1,3 @@
 # moneylogger
+
+Run command: 
