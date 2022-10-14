@@ -15,12 +15,30 @@ services:
       POSTGRES_PASSWORD:
       EMAIL_PASSWORD:
       SECURITY_PASSWORD_SALT:
+    volumes:
+      - volume_moneylogger_downloads:/srv/downloads
     ports:
       - 81:8888
     depends_on:
       - moneylogger_postgres_db
     networks:
       - web
+      - internal
+
+  moneylogger_celery:
+    container_name: moneylogger_celery
+    image: moneylogger_app
+    restart: unless-stopped
+    command: celery -A tasks.celery worker -l INFO -c 1 --max-memory-per-child 1000000 --max-tasks-per-child 50
+    environment:
+      SECRET_KEY:
+      POSTGRES_PASSWORD:
+      EMAIL_PASSWORD:
+      SECURITY_PASSWORD_SALT:
+    depends_on:
+      - moneylogger_postgres_db
+      - moneylogger_redis
+    networks:
       - internal
 
   moneylogger_postgres_db:
@@ -39,7 +57,7 @@ services:
   adminer_moneylogger_postgres_db:
     container_name: adminer_moneylogger_postgres_db
     image: adminer:4.8.1
-    restart: always
+    restart: unless-stopped
     ports:
       - 82:8080
     environment:
@@ -62,5 +80,13 @@ services:
 #    networks:
 #      - internal
 
+  moneylogger_redis:
+    container_name: moneylogger_redis
+    image: redis:5.0.3-alpine
+    restart: unless-stopped
+    networks:
+      - internal
+
 volumes:
   volume_moneylogger_postgres_db:
+  volume_moneylogger_downloads:

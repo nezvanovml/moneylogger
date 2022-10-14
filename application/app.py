@@ -10,7 +10,9 @@ from flask_security import UserMixin, RoleMixin, SQLAlchemyUserDatastore, Securi
 from flask_mail import Mail
 from flask_babelex import Babel
 from flask_admin import Admin
+from celery import Celery
 from admin import DashboardView, UsersView, TransactionsView, RolesView, CategoriesView
+
 
 
 # reading configuration from file
@@ -27,15 +29,22 @@ config = get_config(config_path)
 
 #initialize flaskapp object
 app = Flask(__name__)
+app.config['MAX_CONTENT_LENGTH'] = 1024 * 1024 * 10
+app.config['UPLOAD_FOLDER'] = '/srv/downloads'
+ALLOWED_EXTENSIONS = {'csv'}
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', None)
 app.config['SQLALCHEMY_DATABASE_URI'] = f'postgresql://{config["postgres"]["user"]}:{os.environ.get("POSTGRES_PASSWORD", "")}@{config["postgres"]["host"]}:{config["postgres"]["port"]}/{config["postgres"]["database"]}'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SECURITY_PASSWORD_HASH'] = 'bcrypt'
-app.config['SECURITY_PASSWORD_SALT'] = os.environ.get('SECURITY_PASSWORD_SALT', None)
-app.config['SECURITY_USER_IDENTITY_ATTRIBUTES'] = 'email'
 
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
+
+app.config['CELERY_BROKER_URL'] = 'redis://moneylogger_redis:6379/0'
+app.config['CELERY_RESULT_BACKEND'] = 'redis://moneylogger_redis:6379/0'
+
+celery = Celery(app.name, broker=app.config['CELERY_BROKER_URL'])
+celery.conf.update(app.config)
+
 babel = Babel(app)
 
 @babel.localeselector
@@ -91,6 +100,7 @@ class Transactions(db.Model):
     category_id = db.Column(db.Integer, db.ForeignKey('categories.id'))
     date_of_spent = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     sum = db.Column(db.Float, nullable=False, default=0.0)
+    income = db.Column(db.Boolean, default=False)
     comment = db.Column(db.Text, nullable=True)
 
     def __repr__(self):
@@ -101,10 +111,15 @@ class Categories(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     name = db.Column(db.String(30), nullable=False)
+    income = db.Column(db.Boolean, default=False)
     comment = db.Column(db.Text, nullable=True)
 
     def __repr__(self):
         return 'Category %r' % self.login
+
+app.config['SECURITY_PASSWORD_HASH'] = 'bcrypt'
+app.config['SECURITY_PASSWORD_SALT'] = os.environ.get('SECURITY_PASSWORD_SALT', None)
+app.config['SECURITY_USER_IDENTITY_ATTRIBUTES'] = 'email'
 
 user_datastore = SQLAlchemyUserDatastore(db, User, Role)
 security = Security(app, user_datastore)

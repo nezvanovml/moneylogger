@@ -14,3 +14,5 @@ pyyaml==6.0
 bcrypt==3.2.0
 requests==2.27.1
 Flask-Mail==0.9.1
+redis==3.5.3
+celery==5.1.2

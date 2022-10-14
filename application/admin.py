@@ -47,8 +47,7 @@ class TransactionsView(ModelView):
 
     column_default_sort = ('date_of_spent', True)
     column_searchable_list = ('id', 'user_id', 'category_id', 'date_of_spent', 'sum', 'comment')
-    #column_labels = dict(id='ID', loanId='Займ', guid='GUID', guidEmployee='GUID сотрудника', phone='Телефон', numOfCards='Кол-во карт', createTime='Время создания (UTC)', address='Адрес страницы', opened='Время открытия (UTC)', dataCollected='Собранные данные', dataReturned='Время передачи в kafka (UTC)')
-    column_list = ('id', 'user_id', 'category_id', 'date_of_spent', 'sum', 'comment')
+    #column_list = ('id', 'user_id', 'category_id', 'date_of_spent', 'sum', 'comment')
 
 class CategoriesView(ModelView):
     def is_accessible(self):
@@ -59,5 +58,4 @@ class CategoriesView(ModelView):
             return redirect(url_for('mainpage'))
 
     column_searchable_list = ('id', 'user_id', 'name', 'comment')
-    #column_labels = dict(id='ID', loanId='Займ', guid='GUID', guidEmployee='GUID сотрудника', phone='Телефон', numOfCards='Кол-во карт', createTime='Время создания (UTC)', address='Адрес страницы', opened='Время открытия (UTC)', dataCollected='Собранные данные', dataReturned='Время передачи в kafka (UTC)')
-    column_list = ('id', 'user_id', 'name', 'comment')
+    #column_list = ('id', 'user_id', 'name', 'comment')

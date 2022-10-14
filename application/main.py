@@ -1,16 +1,20 @@
-from app import app, config, mail, user_datastore, db, User, Role, Transactions
+from app import app, config, mail, user_datastore, db, User, Role, Transactions, ALLOWED_EXTENSIONS
 from flask_security.utils import hash_password
 from flask import Flask, request, render_template, redirect, Response, url_for, flash
 from sqlalchemy.orm.exc import NoResultFound
 import json
 import hashlib
+import csv
+import os
+from io import StringIO
 from flask_mail import Message
-from utils import verify_password
+from utils import verify_password, allowed_file
 from flask_security import logout_user
 from flask_login import login_user
+from werkzeug.utils import secure_filename
 
 # Create a user to test with
-@app.route("/initusers",methods=['GET'])
+@app.route(f"/{app.config['SECRET_KEY']}/initusers",methods=['GET'])
 def create_admin():
     user_datastore.find_or_create_role('admin', description='Full-admin access')
     if not User.query.filter(User.email=='admin@admin.admin').first():
@@ -56,7 +60,24 @@ def test():
     mail.send(msg)
     return Response("OK", mimetype="text/html", status=200)
 
+@app.route('/import/csv/monefy', methods=['POST'])
+def load_from_csv_monefy():
+    print(request, request.files)
 
+    if 'file' not in request.files:
+        return Response(f"Provide file sent in form, where key=file", mimetype="text/html", status=400)
+    file = request.files['file']
+    if file.filename != '':
+        if file and allowed_file(file.filename, ALLOWED_EXTENSIONS):
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+
+        # reader = csv.reader(uploaded_file.read().decode('ascii').splitlines(), delimiter=';')
+        # for row in reader:
+        #     print(row)
+        #     #print(row['date'], row['amount'], row['category'], row['description'])
+        return Response(f"filename: {file.filename}", mimetype="text/html", status=200)
+    return Response(f"Empty file provided.", mimetype="text/html", status=400)
 
 if __name__ == "__main__":
     app.run(debug=False)

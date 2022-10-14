@@ -9,3 +9,7 @@ def verify_password(password, password_hash):
         password = get_hmac(password)
 
     return _pwd_context.verify(password, password_hash)
+
+def allowed_file(filename, allowed):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in allowed
