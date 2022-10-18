@@ -16,6 +16,7 @@ from flask_mail import Message
 from utils import allowed_file, check_password_was_not_used_earlier, check_list1_is_in_list2
 from sqlalchemy.sql import select, update, insert, delete
 
+
 def add_user(email, password, first_name, last_name, birthdate, active=True):
     user = User.query.filter(User.email == email).first()
     if not user:
@@ -31,6 +32,7 @@ def add_user(email, password, first_name, last_name, birthdate, active=True):
             return user.id
     return user.id
 
+
 def add_role(name, humanreadablename=""):
     role = Role.query.filter(Role.name == name).first()
     if not role:
@@ -45,6 +47,7 @@ def add_role(name, humanreadablename=""):
             return role.id
     return role.id
 
+
 def add_role_for_user(user_id, role_id):
     user = User.query.filter(User.id == user_id).first()
     role = Role.query.filter(Role.id == role_id).first()
@@ -52,7 +55,7 @@ def add_role_for_user(user_id, role_id):
         conn = db.engine.connect()
         result = conn.execute(
             select(userxrole).where(userxrole.c.user == user.id,
-                                        userxrole.c.role == role.id))
+                                    userxrole.c.role == role.id))
         if not result.fetchone():
             conn.execute(userxrole.insert().values(user=user.id, role=role.id))
             return True
@@ -61,6 +64,7 @@ def add_role_for_user(user_id, role_id):
     else:
         return False
 
+
 def remove_role_for_user(user_id, role_id):
     user = User.query.filter(User.id == user_id).first()
     role = Role.query.filter(Role.id == role_id).first()
@@ -68,16 +72,17 @@ def remove_role_for_user(user_id, role_id):
         conn = db.engine.connect()
         result = conn.execute(
             select(userxrole).where(userxrole.c.user == user.id,
-                                        userxrole.c.role == role.id))
+                                    userxrole.c.role == role.id))
         if result.fetchone():
             conn.execute(
                 delete(userxrole).where(userxrole.c.user == user.id,
-                                            userxrole.c.role == role.id))
+                                        userxrole.c.role == role.id))
             return True
         else:
             return False
     else:
         return False
+
 
 def change_password(user_id, password):
     user = User.query.filter(User.id == user_id).first()
@@ -101,6 +106,7 @@ def change_password(user_id, password):
         else:
             return True
     return False
+
 
 def have_roles(needed_roles):
     def wrapper(fn):
@@ -126,6 +132,7 @@ def have_roles(needed_roles):
 
     return wrapper
 
+
 def get_current_user():
     token = request.headers.get('Authorization', None)
     if token:
@@ -133,6 +140,7 @@ def get_current_user():
         if user:
             return user.id
     return None
+
 
 def is_authorized():
     def wrapper(fn):
@@ -146,15 +154,17 @@ def is_authorized():
 
     return wrapper
 
+
 # Create a user to test with
-@app.route("/createadmin",methods=['GET'])
+@app.route("/createadmin", methods=['GET'])
 def create_admin():
-    role = add_role("SUPERUSER","SUPERUSER ROLE")
-    user = add_user(email='admin@localhost', password="admin", first_name='SUPER',last_name='ADMIN', birthdate=datetime.datetime.utcnow())
+    role = add_role("SUPERUSER", "SUPERUSER ROLE")
+    user = add_user(email='admin@localhost', password="admin", first_name='SUPER', last_name='ADMIN',
+                    birthdate=datetime.datetime.utcnow())
     if role and user:
         add_role_for_user(user, role)
     return Response("OK.", mimetype="text/html",
-                        status=200)
+                    status=200)
 
 
 @app.route('/transactions', methods=['GET', 'POST', 'PUT', 'DELETE'])
@@ -177,8 +187,9 @@ def transactions():
                 return Response("Incorrect format of end_date.", mimetype="text/html", status=400)
 
         if not end_date and not start_date:
-            transactions = Transactions.query.filter(Transactions.user_id == get_current_user()).order_by(Transactions.date_of_spent).all()
-            result = {'count': len(transactions),'transactions': []}
+            transactions = Transactions.query.filter(Transactions.user_id == get_current_user()).order_by(
+                Transactions.date_of_spent).all()
+            result = {'count': len(transactions), 'transactions': []}
             for transaction in transactions:
                 result['transactions'].append({
                     'id': transaction.id,
@@ -189,9 +200,10 @@ def transactions():
                 })
             return Response(json.dumps(result), mimetype="application/json", status=200)
         elif end_date and not start_date:
-            transactions = Transactions.query.filter(Transactions.user_id == get_current_user(), Transactions.date_of_spent < end_date).order_by(
+            transactions = Transactions.query.filter(Transactions.user_id == get_current_user(),
+                                                     Transactions.date_of_spent < end_date).order_by(
                 Transactions.date_of_spent).all()
-            result = {'count': len(transactions),'transactions': []}
+            result = {'count': len(transactions), 'transactions': []}
             for transaction in transactions:
                 result['transactions'].append({
                     'id': transaction.id,
@@ -202,9 +214,10 @@ def transactions():
                 })
             return Response(json.dumps(result), mimetype="application/json", status=200)
         elif start_date and not end_date:
-            transactions = Transactions.query.filter(Transactions.user_id == get_current_user(), Transactions.date_of_spent >= start_date).order_by(
+            transactions = Transactions.query.filter(Transactions.user_id == get_current_user(),
+                                                     Transactions.date_of_spent >= start_date).order_by(
                 Transactions.date_of_spent).all()
-            result = {'count': len(transactions),'transactions': []}
+            result = {'count': len(transactions), 'transactions': []}
             for transaction in transactions:
                 result['transactions'].append({
                     'id': transaction.id,
@@ -215,9 +228,11 @@ def transactions():
                 })
             return Response(json.dumps(result), mimetype="application/json", status=200)
         else:
-            transactions = Transactions.query.filter(Transactions.user_id == get_current_user(), Transactions.date_of_spent >= start_date, Transactions.date_of_spent < end_date).order_by(
+            transactions = Transactions.query.filter(Transactions.user_id == get_current_user(),
+                                                     Transactions.date_of_spent >= start_date,
+                                                     Transactions.date_of_spent < end_date).order_by(
                 Transactions.date_of_spent).all()
-            result = {'count': len(transactions),'transactions': []}
+            result = {'count': len(transactions), 'transactions': []}
             for transaction in transactions:
                 result['transactions'].append({
                     'id': transaction.id,
@@ -227,8 +242,295 @@ def transactions():
                     'comment': transaction.comment
                 })
             return Response(json.dumps(result), mimetype="application/json", status=200)
+    elif request.method == 'PUT':
+
+        user_id = get_current_user()
+
+        category_id = request.args.get('category', None)
+        try:
+            category_id = int(category_id)
+        except ValueError:
+            return Response(json.dumps({'status': 'ERROR', 'description': f"Category is not a int."}),
+                            mimetype="application/json",
+                            status=400)
+        except TypeError:
+            return Response(json.dumps({'status': 'ERROR', 'description': f"Category not provided."}),
+                            mimetype="application/json",
+                            status=400)
+        category = Categories.query.filter(Categories.id == category_id, Categories.user_id == user_id).first()
+        if not category:
+            return Response(
+                json.dumps({'status': 'ERROR', 'description': f"Category not found."}),
+                mimetype="application/json",
+                status=404)
+
+        date = request.args.get('date', None)
+        try:
+            date = datetime.datetime.strptime(date, '%d.%m.%Y').date()
+        except ValueError:
+            return Response(json.dumps({'status': 'ERROR', 'description': f"Incorrect format of date."}),
+                            mimetype="application/json",
+                            status=400)
+        except TypeError:
+            return Response(json.dumps({'status': 'ERROR', 'description': f"Date not provided."}),
+                            mimetype="application/json",
+                            status=400)
+
+        sum = request.args.get('sum', None)
+        try:
+            sum = float(sum)
+        except ValueError:
+            return Response(json.dumps({'status': 'ERROR', 'description': f"Sum is not a int/float."}),
+                            mimetype="application/json",
+                            status=400)
+        except TypeError:
+            return Response(json.dumps({'status': 'ERROR', 'description': f"Sum not provided."}),
+                            mimetype="application/json",
+                            status=400)
+
+        comment = request.args.get('comment', None)
+        transaction = Transactions(user_id=user_id,
+                                   category_id=category.id,
+                                   date_of_spent=date,
+                                   sum=sum,
+                                   comment=comment)
+        try:
+            db.session.add(transaction)
+            db.session.commit()
+        except Exception as error:
+            db.session.rollback()
+            return Response(json.dumps({'status': 'ERROR', 'description': error}), mimetype="application/json",
+                            status=500)
+        return Response(json.dumps({'status': 'SUCCESS', 'description': 'ADDED', 'id': transaction.id}), mimetype="application/json",
+                        status=201)
+    elif request.method == 'POST':
+
+        user_id = get_current_user()
+
+        transaction_id = request.args.get('transaction', None)
+        try:
+            transaction_id = int(transaction_id)
+        except ValueError:
+            return Response(json.dumps({'status': 'ERROR', 'description': f"Transaction is not a int."}),
+                            mimetype="application/json",
+                            status=400)
+        except TypeError:
+            return Response(json.dumps({'status': 'ERROR', 'description': f"Transaction not provided."}),
+                            mimetype="application/json",
+                            status=400)
+        transaction = Transactions.query.filter(Transactions.id == transaction_id, Transactions.user_id == user_id).first()
+        if not transaction:
+            return Response(
+                json.dumps({'status': 'ERROR', 'description': f"Transaction not found."}),
+                mimetype="application/json",
+                status=404)
+
+        category_id = request.args.get('category', None)
+        if category_id:
+            try:
+                category_id = int(category_id)
+            except ValueError:
+                return Response(json.dumps({'status': 'ERROR', 'description': f"Category is not a int."}),
+                                mimetype="application/json",
+                                status=400)
+            category = Categories.query.filter(Categories.id == category_id, Categories.user_id == user_id).first()
+            if not category:
+                return Response(
+                    json.dumps({'status': 'ERROR', 'description': f"Category not found."}),
+                    mimetype="application/json",
+                    status=404)
+            transaction.category_id = category_id
+
+        date = request.args.get('date', None)
+        if date:
+            try:
+                date = datetime.datetime.strptime(date, '%d.%m.%Y').date()
+            except ValueError:
+                return Response(json.dumps({'status': 'ERROR', 'description': f"Incorrect format of date."}),
+                                mimetype="application/json",
+                                status=400)
+            transaction.date_of_spent = date
+
+        sum = request.args.get('sum', None)
+        if sum:
+            try:
+                sum = float(sum)
+            except ValueError:
+                return Response(json.dumps({'status': 'ERROR', 'description': f"Sum is not a int/float."}),
+                                mimetype="application/json",
+                                status=400)
+            transaction.sum = sum
+
+        comment = request.args.get('comment', None)
+        if comment:
+            transaction.comment = str(comment)
+
+        try:
+            db.session.commit()
+        except Exception as error:
+            db.session.rollback()
+            return Response(json.dumps({'status': 'ERROR', 'description': error}), mimetype="application/json",
+                            status=500)
+        return Response(json.dumps({'status': 'SUCCESS', 'description': 'UPDATED', 'id': transaction.id}), mimetype="application/json",
+                        status=201)
+    elif request.method == 'DELETE':
+
+        user_id = get_current_user()
+
+        transaction_id = request.args.get('transaction', None)
+        try:
+            transaction_id = int(transaction_id)
+        except ValueError:
+            return Response(json.dumps({'status': 'ERROR', 'description': f"Transaction is not a int."}),
+                            mimetype="application/json",
+                            status=400)
+        except TypeError:
+            return Response(json.dumps({'status': 'ERROR', 'description': f"Transaction not provided."}),
+                            mimetype="application/json",
+                            status=400)
+        transaction = Transactions.query.filter(Transactions.id == transaction_id,
+                                                Transactions.user_id == user_id).first()
+        if not transaction:
+            return Response(
+                json.dumps({'status': 'ERROR', 'description': f"Transaction not found."}),
+                mimetype="application/json",
+                status=404)
+
+        Transactions.query.filter(Transactions.id == transaction_id,
+                                  Transactions.user_id == user_id).delete()
+        try:
+            db.session.commit()
+        except Exception as error:
+            db.session.rollback()
+            return Response(json.dumps({'status': 'ERROR', 'description': error}), mimetype="application/json",
+                            status=500)
+        return Response(json.dumps({'status': 'SUCCESS', 'description': 'DELETED'}), mimetype="application/json",
+                        status=201)
     else:
-        return Response("OK.", mimetype="text/html", status=200)
+        return Response(json.dumps({'status': 'ERROR', 'description': 'Method not allowed.'}), mimetype="application/json", status=405)
+
+@app.route('/categories', methods=['GET', 'POST', 'PUT', 'DELETE'])
+@is_authorized()
+def categories():
+    if request.method == 'GET':
+        categories = Categories.query.filter(Categories.user_id == get_current_user()).all()
+        result = {'count': len(categories), 'categories': []}
+        for category in categories:
+            result['categories'].append({
+                'id': category.id,
+                'name': category.name,
+                'income': category.income,
+                'description': category.description
+            })
+        return Response(json.dumps(result), mimetype="application/json", status=200)
+    elif request.method == 'PUT':
+
+        user_id = get_current_user()
+        name = request.args.get('name', None)
+        if not name:
+            return Response(json.dumps({'status': 'ERROR', 'description': f"Name not provided."}),
+                            mimetype="application/json",
+                            status=400)
+
+        income = request.args.get('income', None)
+        if not income:
+            return Response(json.dumps({'status': 'ERROR', 'description': f"Income not provided."}),
+                            mimetype="application/json",
+                            status=400)
+        income = True if income == 'True' else False
+
+        description = request.args.get('description', None)
+
+        category = Categories(user_id=user_id,
+                                   name=name,
+                                   income=income,
+                                   description=description)
+        try:
+            db.session.add(category)
+            db.session.commit()
+        except Exception as error:
+            db.session.rollback()
+            return Response(json.dumps({'status': 'ERROR', 'description': error}), mimetype="application/json",
+                            status=500)
+        return Response(json.dumps({'status': 'SUCCESS', 'description': 'ADDED', 'id': category.id}), mimetype="application/json",
+                        status=201)
+    elif request.method == 'POST':
+
+        user_id = get_current_user()
+
+        category_id = request.args.get('category', None)
+        try:
+            category_id = int(category_id)
+        except ValueError:
+            return Response(json.dumps({'status': 'ERROR', 'description': f"Category is not a int."}),
+                            mimetype="application/json",
+                            status=400)
+        except TypeError:
+            return Response(json.dumps({'status': 'ERROR', 'description': f"Category not provided."}),
+                            mimetype="application/json",
+                            status=400)
+
+        category = Categories.query.filter(Categories.id == category_id, Categories.user_id == user_id).first()
+        if not category:
+            return Response(
+                json.dumps({'status': 'ERROR', 'description': f"Category not found."}),
+                mimetype="application/json",
+                status=404)
+
+        name = request.args.get('name', None)
+        if name:
+            category.name = name
+
+        income = request.args.get('income', None)
+        if income:
+            income = True if income == 'True' else False
+            category.income = income
+
+        description = request.args.get('description', None)
+        if description:
+            category.description = str(description)
+
+        try:
+            db.session.commit()
+        except Exception as error:
+            db.session.rollback()
+            return Response(json.dumps({'status': 'ERROR', 'description': error}), mimetype="application/json",
+                            status=500)
+        return Response(json.dumps({'status': 'SUCCESS', 'description': 'UPDATED', 'id': category.id}), mimetype="application/json",
+                        status=201)
+    elif request.method == 'DELETE':
+
+        user_id = get_current_user()
+
+        category_id = request.args.get('category', None)
+        try:
+            category_id = int(category_id)
+        except ValueError:
+            return Response(json.dumps({'status': 'ERROR', 'description': f"Category is not a int."}),
+                            mimetype="application/json",
+                            status=400)
+        except TypeError:
+            return Response(json.dumps({'status': 'ERROR', 'description': f"Category not provided."}),
+                            mimetype="application/json",
+                            status=400)
+        category = Categories.query.filter(Categories.id == category_id, Categories.user_id == user_id).first()
+        if not category:
+            return Response(
+                json.dumps({'status': 'ERROR', 'description': f"Category not found."}),
+                mimetype="application/json",
+                status=404)
+
+        Categories.query.filter(Categories.id == category_id, Categories.user_id == user_id).delete()
+        try:
+            db.session.commit()
+        except Exception as error:
+            db.session.rollback()
+            return Response(json.dumps({'status': 'ERROR', 'description': error}), mimetype="application/json",
+                            status=500)
+        return Response(json.dumps({'status': 'SUCCESS', 'description': 'DELETED'}), mimetype="application/json",
+                        status=201)
+    else:
+        return Response(json.dumps({'status': 'ERROR', 'description': 'Method not allowed.'}), mimetype="application/json", status=405)
 
 @app.route('/import/csv', methods=['POST'])
 @is_authorized()
@@ -301,9 +603,11 @@ def login():
             if not user.token or len(user.token) != 64:
                 user.token = hashlib.sha256(str(random.getrandbits(256)).encode('utf-8')).hexdigest()
                 db.session.commit()
-            return Response(json.dumps({'status': 'SUCCESS', 'token': user.token}), mimetype="application/json", status=200)
+            return Response(json.dumps({'status': 'SUCCESS', 'token': user.token}), mimetype="application/json",
+                            status=200)
     return Response(json.dumps({'status': 'ERROR', 'description': 'check provided credentials.'}),
-                        mimetype="application/json", status=404)
+                    mimetype="application/json", status=404)
+
 
 @app.route('/logout', methods=['POST'])
 @is_authorized()

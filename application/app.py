@@ -102,7 +102,7 @@ class Categories(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     name = db.Column(db.String(30), nullable=False)
     income = db.Column(db.Boolean, default=False)
-    comment = db.Column(db.Text, nullable=True)
+    description = db.Column(db.Text, nullable=True)
     transactions = db.relationship('Transactions', backref='Category', lazy=True)
 
     def __repr__(self):
