@@ -1,15 +1,18 @@
-from flask_security.utils import get_hmac, _pwd_context, _security
-
-def verify_password(password, password_hash):
-    """Returns ``True`` if the password matches the supplied hash.
-    :param password: A plaintext password to verify
-    :param password_hash: The expected hash value of the password (usually form your database)
-    """
-    if _security.password_hash != 'plaintext':
-        password = get_hmac(password)
-
-    return _pwd_context.verify(password, password_hash)
-
 def allowed_file(filename, allowed):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in allowed
+
+def check_password_was_not_used_earlier(current_hash, previous_hashes):
+    if not previous_hashes or not current_hash:
+        return False
+    hashes = previous_hashes.split(';')
+    for current in hashes:
+        if current_hash == current:
+            return True
+    return False
+
+def check_list1_is_in_list2(list1, list2):
+    for item in list1:
+        if item not in list2:
+            return False
+    return True
