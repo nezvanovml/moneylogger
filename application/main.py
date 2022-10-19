@@ -125,8 +125,14 @@ def have_roles(needed_roles):
                 if check_list1_is_in_list2(needed_roles, actual_roles):
                     return fn(*args, **kwargs)
                 else:
-                    return Response('NOT ENOUGH PRIVILEGIES', status=401)
-            return Response('UNAUTHORIZED', status=401)
+                    return Response(json.dumps(
+                        {'status': 'UNAUTHORIZED', 'description': f"You have no permissions to perform request."}),
+                                    mimetype="application/json",
+                                    status=401)
+            return Response(json.dumps(
+                {'status': 'UNAUTHORIZED', 'description': f"You must authenticate first to perform request."}),
+                            mimetype="application/json",
+                            status=401)
 
         return decorated_function
 
@@ -148,7 +154,9 @@ def is_authorized():
         def decorated_function(*args, **kwargs):
             if get_current_user():
                 return fn(*args, **kwargs)
-            return Response('UNAUTHORIZED', status=401)
+            return Response(json.dumps({'status': 'UNAUTHORIZED', 'description': f"You must authenticate first to perform request."}),
+                            mimetype="application/json",
+                            status=401)
 
         return decorated_function
 
@@ -156,13 +164,16 @@ def is_authorized():
 
 
 # Create a user to test with
-@app.route("/createadmin", methods=['GET'])
-def create_admin():
-    role = add_role("SUPERUSER", "SUPERUSER ROLE")
+@app.route("/init", methods=['GET'])
+def initialization():
+    admin_role = add_role("SUPERUSER", "SUPERUSER ROLE")
+    user_role = add_role("USER", "Standard user")
     user = add_user(email='admin@localhost', password="admin", first_name='SUPER', last_name='ADMIN',
                     birthdate=datetime.datetime.utcnow())
-    if role and user:
-        add_role_for_user(user, role)
+    if admin_role and user:
+        add_role_for_user(user, admin_role)
+    if user_role and user:
+        add_role_for_user(user, user_role)
     return Response("OK.", mimetype="text/html",
                     status=200)
 
@@ -591,22 +602,27 @@ def load_from_csv_monefy():
             return Response("OK", mimetype="text/html", status=200)
     return Response(f"Empty file provided.", mimetype="text/html", status=400)
 
-
 @app.route('/login', methods=['POST'])
 def login():
-    email = request.form.get('email')
-    password = request.form.get('password', " ")
-    if len(password) > 0:
-        user = User.query.filter(User.password == hashlib.sha256(password.encode('utf-8')).hexdigest(),
-                                 User.email == email).first()
-        if user:
-            if not user.token or len(user.token) != 64:
-                user.token = hashlib.sha256(str(random.getrandbits(256)).encode('utf-8')).hexdigest()
-                db.session.commit()
-            return Response(json.dumps({'status': 'SUCCESS', 'token': user.token}), mimetype="application/json",
-                            status=200)
+    if not request.is_json:
+        return Response(json.dumps({'status': 'ERROR', 'description': 'Provide correct JSON structure.'}),
+                        mimetype="application/json", status=400)
+    data = request.get_json()
+    if data:
+        email = data.get('email')
+        password = data.get('password', " ")
+        if len(password) > 0:
+            user = User.query.filter(User.password == hashlib.sha256(password.encode('utf-8')).hexdigest(),
+                                     User.email == email).first()
+            if user:
+                if not user.token or len(user.token) != 64:
+                    user.token = hashlib.sha256(str(random.getrandbits(256)).encode('utf-8')).hexdigest()
+                    db.session.commit()
+                return Response(json.dumps({'status': 'SUCCESS', 'token': user.token}), mimetype="application/json",
+                                status=200)
     return Response(json.dumps({'status': 'ERROR', 'description': 'check provided credentials.'}),
                     mimetype="application/json", status=404)
+
 
 
 @app.route('/logout', methods=['POST'])
@@ -622,6 +638,13 @@ def logout():
                             mimetype="application/json", status=200)
     return Response(json.dumps({'status': 'ERROR', 'description': 'check provided credentials.'}),
                     mimetype="application/json", status=404)
+
+@app.route('/checkauth', methods=['GET'])
+@is_authorized()
+def checkauth():
+    return Response(json.dumps({'status': 'SUCCESS', 'description': 'Token is correct.'}),
+                            mimetype="application/json", status=200)
+
 
 
 if __name__ == "__main__":

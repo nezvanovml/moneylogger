@@ -8,6 +8,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_mail import Mail
 from celery import Celery
+from flask_cors import CORS
 
 
 # reading configuration from file
@@ -24,6 +25,8 @@ config = get_config(config_path)
 
 #initialize flaskapp object
 app = Flask(__name__)
+CORS(app)
+
 app.config['WTF_CSRF_ENABLED'] = False
 app.config['MAX_CONTENT_LENGTH'] = 1024 * 1024 * 10
 app.config['UPLOAD_FOLDER'] = '/srv/downloads'

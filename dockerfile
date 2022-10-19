@@ -12,5 +12,5 @@ WORKDIR /srv/application
 ENV PYTHONIOENCODING=utf8
 ENV LC_ALL=en_US.utf-8
 ENV LANG=en_US.utf-8
-RUN chmod -R 744 /srv
+#RUN chmod -R 744 /srv
 CMD ["uwsgi","/srv/uwsgi.ini"]
