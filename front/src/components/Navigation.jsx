@@ -22,7 +22,6 @@ function Navigation() {
                   <li className="nav-item">
                     <NavLink className="nav-link" to="/">
                       Отчёты
-                      <span className="sr-only">(current)</span>
                     </NavLink>
                   </li>
                   <li className="nav-item">

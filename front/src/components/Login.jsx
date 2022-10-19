@@ -16,6 +16,7 @@ console.log(JSON.stringify(credentials))
 export default function Login({ setToken }) {
   const [email, setEmail] = useState();
   const [password, setPassword] = useState();
+  const [hideErrorbox, setHideErrorbox] = useState(true);
 
   const handleSubmit = async e => {
     e.preventDefault();
@@ -27,28 +28,35 @@ export default function Login({ setToken }) {
     if(token.status == 'SUCCESS'){
         console.log('Token: ' + token.token)
         //localStorage.setItem('token', token.token);
+        setHideErrorbox(true)
         setToken(token.token);
 
     } else {
+        setHideErrorbox(false)
         console.log('error logging in')
     }
   }
 
   return (
-    <div className="login">
-      <div className="container">
+    <div className="text-center">
+      <main className="form-signin w-100 mt-5 m-auto">
+
         <form onSubmit={handleSubmit}>
-          <div className="mb-3">
-            <label htmlFor="exampleInputEmail1" className="form-label">Email address</label>
-            <input type="email" className="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" onChange={e => setEmail(e.target.value)}/>
+            <img className="mb-4" src="https://getbootstrap.com/docs/5.2/assets/brand/bootstrap-logo.svg" alt="" width="72" height="57" />
+            <h1 className="h3 mb-3 fw-normal">Войти в систему</h1>
+          <div className="form-floating">
+            <input type="email" className="form-control" id="InputEmail" onChange={e => setEmail(e.target.value)}/>
+            <label htmlFor="InputEmail">Email</label>
           </div>
-          <div className="mb-3">
-            <label htmlFor="exampleInputPassword1" className="form-label">Password</label>
-            <input type="password" className="form-control" id="exampleInputPassword1" onChange={e => setPassword(e.target.value)}/>
+          <div className="form-floating">
+            <input type="password" className="form-control" id="InputPassword" onChange={e => setPassword(e.target.value)}/>
+            <label htmlFor="InputPassword">Пароль</label>
           </div>
-          <button type="submit" className="btn btn-primary">Submit</button>
+          <button type="submit" className="btn btn-primary">Войти</button>
+          <div className={'alert alert-danger mt-2 ' + (hideErrorbox ? "d-none" : "")}  role="alert">Указаны неверные данные для входа</div>
         </form>
-      </div>
+
+      </main>
     </div>
   );
 }

@@ -14,17 +14,14 @@ import {
   Login
 } from "./components";
 
-//localStorage.setItem('token', 'hjfhsdkfhjsdf\djf');
-//if localStorage.getItem('token')
-
-function setToken(userToken) {
-    sessionStorage.setItem('token', userToken);
-}
-
-function getToken() {
-    const userToken = sessionStorage.getItem('token');
-    return userToken
-}
+//function setToken(userToken) {
+//    sessionStorage.setItem('token', userToken);
+//}
+//
+//function getToken() {
+//    const userToken = sessionStorage.getItem('token');
+//    return userToken
+//}
 
 
 function App() {
@@ -33,7 +30,7 @@ function App() {
 
 
     if(!token) {
-        return <div><Login setToken={setToken} /><Footer /></div>
+        return <Login setToken={setToken} />
     }
 
     return (
@@ -43,7 +40,7 @@ function App() {
           <Route path="/" element={<Reports />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/categories" element={<Categories />} />
-          <Route path="/transactions" element={<Transactions />} />
+          <Route path="/transactions" element={<Transactions token={token} />} />
           <Route path="/login" element={<Login />} />
         </Routes>
         <Footer />
