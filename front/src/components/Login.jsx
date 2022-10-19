@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 async function loginUser(credentials) {
 console.log(JSON.stringify(credentials))
- return fetch('http://localhost:81/login', {
+ return fetch('http://192.168.0.222:81/login', {
    method: 'POST',
    headers: {
      'Content-Type': 'application/json'
