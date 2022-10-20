@@ -182,77 +182,68 @@ def initialization():
 @is_authorized()
 def transactions():
     if request.method == 'GET':
+        user_id = get_current_user()
         start_date = request.args.get('start_date', None)
         end_date = request.args.get('end_date', None)
+        category_id = request.args.get('category', None)
+        try:
+            category_id = int(category_id)
+        except ValueError:
+            category_id = None
+        except TypeError:
+            pass
+
+        if category_id:
+            category = Categories.query.filter(Categories.id == category_id, Categories.user_id == user_id).first()
+            if not category:
+                category_id = None
 
         if start_date:
             try:
-                start_date = datetime.datetime.strptime(start_date, '%d.%m.%Y').date()
+                start_date = datetime.datetime.strptime(start_date, '%Y-%m-%d').date()
             except ValueError:
-                return Response("Incorrect format of start_date.", mimetype="text/html", status=400)
+                return Response(json.dumps({'status': 'ERROR', 'description': f"Incorrect format of start_date."}),
+                            mimetype="application/json",
+                            status=400)
 
         if end_date:
             try:
-                end_date = datetime.datetime.strptime(end_date, '%d.%m.%Y').date()
+                end_date = datetime.datetime.strptime(end_date, '%Y-%m-%d').date()
             except ValueError:
-                return Response("Incorrect format of end_date.", mimetype="text/html", status=400)
+                return Response(json.dumps({'status': 'ERROR', 'description': f"Incorrect format of end_date."}),
+                                mimetype="application/json",
+                                status=400)
 
         if not end_date and not start_date:
-            transactions = Transactions.query.filter(Transactions.user_id == get_current_user()).order_by(
-                Transactions.date_of_spent).all()
-            result = {'count': len(transactions), 'transactions': []}
-            for transaction in transactions:
-                result['transactions'].append({
-                    'id': transaction.id,
-                    'category': transaction.category_id,
-                    'date': transaction.date_of_spent.strftime("%d.%m.%Y"),
-                    'sum': transaction.sum,
-                    'comment': transaction.comment
-                })
-            return Response(json.dumps(result), mimetype="application/json", status=200)
+            transactions = Transactions.query.filter(Transactions.user_id == get_current_user())
         elif end_date and not start_date:
             transactions = Transactions.query.filter(Transactions.user_id == get_current_user(),
-                                                     Transactions.date_of_spent < end_date).order_by(
-                Transactions.date_of_spent).all()
-            result = {'count': len(transactions), 'transactions': []}
-            for transaction in transactions:
-                result['transactions'].append({
-                    'id': transaction.id,
-                    'category': transaction.category_id,
-                    'date': transaction.date_of_spent.strftime("%d.%m.%Y"),
-                    'sum': transaction.sum,
-                    'comment': transaction.comment
-                })
-            return Response(json.dumps(result), mimetype="application/json", status=200)
+                                                     Transactions.date_of_spent < end_date)
         elif start_date and not end_date:
             transactions = Transactions.query.filter(Transactions.user_id == get_current_user(),
-                                                     Transactions.date_of_spent >= start_date).order_by(
-                Transactions.date_of_spent).all()
-            result = {'count': len(transactions), 'transactions': []}
-            for transaction in transactions:
-                result['transactions'].append({
-                    'id': transaction.id,
-                    'category': transaction.category_id,
-                    'date': transaction.date_of_spent.strftime("%d.%m.%Y"),
-                    'sum': transaction.sum,
-                    'comment': transaction.comment
-                })
-            return Response(json.dumps(result), mimetype="application/json", status=200)
+                                                     Transactions.date_of_spent >= start_date)
+        elif start_date and not end_date:
+            transactions = Transactions.query.filter(Transactions.user_id == get_current_user(),
+                                                     Transactions.date_of_spent >= start_date)
         else:
             transactions = Transactions.query.filter(Transactions.user_id == get_current_user(),
                                                      Transactions.date_of_spent >= start_date,
-                                                     Transactions.date_of_spent < end_date).order_by(
-                Transactions.date_of_spent).all()
-            result = {'count': len(transactions), 'transactions': []}
-            for transaction in transactions:
-                result['transactions'].append({
+                                                     Transactions.date_of_spent < end_date)
+        if category_id:
+            transactions = transactions.filter(Transactions.category_id == category_id)
+
+        transactions = transactions.order_by(Transactions.date_of_spent).all()
+        result = {'count': len(transactions), 'transactions': []}
+        for transaction in transactions:
+            result['transactions'].append({
                     'id': transaction.id,
                     'category': transaction.category_id,
-                    'date': transaction.date_of_spent.strftime("%d.%m.%Y"),
+                    'date': transaction.date_of_spent.strftime("%Y-%m-%d"),
                     'sum': transaction.sum,
                     'comment': transaction.comment
-                })
-            return Response(json.dumps(result), mimetype="application/json", status=200)
+            })
+        return Response(json.dumps(result), mimetype="application/json", status=200)
+
     elif request.method == 'PUT':
 
         user_id = get_current_user()
@@ -277,7 +268,7 @@ def transactions():
 
         date = request.args.get('date', None)
         try:
-            date = datetime.datetime.strptime(date, '%d.%m.%Y').date()
+            date = datetime.datetime.strptime(date, '%Y-%m-%d').date()
         except ValueError:
             return Response(json.dumps({'status': 'ERROR', 'description': f"Incorrect format of date."}),
                             mimetype="application/json",
@@ -355,7 +346,7 @@ def transactions():
         date = request.args.get('date', None)
         if date:
             try:
-                date = datetime.datetime.strptime(date, '%d.%m.%Y').date()
+                date = datetime.datetime.strptime(date, '%Y-%m-%d').date()
             except ValueError:
                 return Response(json.dumps({'status': 'ERROR', 'description': f"Incorrect format of date."}),
                                 mimetype="application/json",
