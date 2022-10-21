@@ -75,6 +75,30 @@ const updateTransaction = async e => {
 
   }
 
+const addTransaction = async e => {
+    e.preventDefault();
+    console.log(e.target.elements.date.value,e.target.elements.sum.value,e.target.elements.category.value,e.target.elements.comment.value)
+    let date = e.target.elements.date.value;
+    let sum = e.target.elements.sum.value;
+    let category = e.target.elements.category.value;
+    let comment = e.target.elements.comment.value;
+    if (!(categories.find(o => o.id == category).income)) sum = sum * (-1);
+    let result = await fetch('http://192.168.0.222:81/transactions?category='+category+'&date='+date+'&sum='+sum+'&comment='+comment, { method: 'PUT', headers: {'Authorization': token}})
+    if (result.status == 201) {
+        loadData(startDate, endDate, searchCategory);
+        e.target.reset()
+    }
+
+  }
+
+const deleteTransaction = async (id) => {
+
+    console.log('Delete: '+id)
+
+    let result = await fetch('http://192.168.0.222:81/transactions?transaction='+id, { method: 'DELETE', headers: {'Authorization': token}})
+    if (result.status == 200) loadData(startDate, endDate, searchCategory);
+  }
+
     useEffect(() => {
         loadData(startDate, endDate, searchCategory);
    }, [startDate, endDate, searchCategory]);
@@ -114,6 +138,44 @@ const updateTransaction = async e => {
         </div>
         <div className="col">
         <ul className="list-group m-2 justify-content-between mb-5">
+            <li className={'list-group-item list-group-item-action text-dark bg-opacity-50 '}>
+                <div data-bs-toggle="collapse" data-bs-target={"#collapseNew"} >
+                                <div className="d-flex w-100 justify-content-center">
+                                  <strong>Добавить</strong>
+                                </div>
+
+                </div>
+                <div className="collapse" id={"collapseNew"}>
+                                <div className="card card-body mt-2">
+                                    <form onSubmit={addTransaction}>
+                                      <div className="mb-3">
+                                        <select name="category" className="form-select form-select-lg mb-3">
+                                          {Object.entries(categoriesDict).map(([key, value]) => {
+                                             return (
+                                                    <option value={key} key={key} selected={key == searchCategory ? "selected" : false} >{value}</option>
+                                             );
+                                            })
+                                          }
+                                        </select>
+                                      </div>
+                                      <div className="form-floating mb-3">
+                                        <input type="date" name="date" className="form-control" id="InputEnd" defaultValue={new Date().toISOString().slice(0, 10)}/>
+                                        <label htmlFor="InputEnd">Дата</label>
+                                      </div>
+                                      <div className="input-group mb-3">
+                                          <input type="text" name="sum" className="form-control" placeholder="Сумма" defaultValue="0" aria-describedby="basic-addon2" />
+                                          <span className="input-group-text" id="basic-addon2">₽</span>
+                                      </div>
+                                      <div className="mb-3">
+                                        <input type="text" name="comment" className="form-control" placeholder="Комментарий" id="exampleInputPassword1"/>
+                                      </div>
+                                      <div className="d-flex w-100 justify-content-center">
+                                        <button type="submit" className="btn btn-success" >Добавить</button>
+                                      </div>
+                                    </form>
+                                  </div>
+                                </div>
+            </li>
                 {transactions.map((transaction) => {
 
                      return (
@@ -133,7 +195,7 @@ const updateTransaction = async e => {
                                 <div className="collapse" id={"collapseExample"+transaction.id}>
                                   <div className="card card-body">
                                     <form onSubmit={updateTransaction}>
-                                      <input type="text" class="visually-hidden" name="id" value={transaction.id} />
+                                      <input type="text" className="visually-hidden" name="id" defaultValue={transaction.id} />
                                       <div className="mb-3">
                                         <select name="category" className="form-select form-select-lg mb-3" id={"category"+transaction.id}>
                                           {Object.entries(categoriesDict).map(([key, value]) => {
@@ -156,8 +218,8 @@ const updateTransaction = async e => {
                                         <input type="text" name="comment" className="form-control" placeholder="Комментарий" id="exampleInputPassword1" defaultValue={transaction.comment}/>
                                       </div>
                                       <div className="d-flex w-100 justify-content-between">
-                                        <button type="button" className="btn btn-danger" data-bs-dismiss="modal">Удалить</button>
-                                        <button type="submit" className="btn btn-success">Сохранить</button>
+                                        <button type="button" className="btn btn-danger" onClick={e => deleteTransaction(transaction.id)}>Удалить</button>
+                                        <button type="submit" className="btn btn-success" >Сохранить</button>
                                       </div>
                                     </form>
                                   </div>

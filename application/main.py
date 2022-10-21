@@ -218,7 +218,7 @@ def transactions():
             transactions = Transactions.query.filter(Transactions.user_id == get_current_user())
         elif end_date and not start_date:
             transactions = Transactions.query.filter(Transactions.user_id == get_current_user(),
-                                                     Transactions.date_of_spent < end_date)
+                                                     Transactions.date_of_spent <= end_date)
         elif start_date and not end_date:
             transactions = Transactions.query.filter(Transactions.user_id == get_current_user(),
                                                      Transactions.date_of_spent >= start_date)
@@ -228,11 +228,11 @@ def transactions():
         else:
             transactions = Transactions.query.filter(Transactions.user_id == get_current_user(),
                                                      Transactions.date_of_spent >= start_date,
-                                                     Transactions.date_of_spent < end_date)
+                                                     Transactions.date_of_spent <= end_date)
         if category_id:
             transactions = transactions.filter(Transactions.category_id == category_id)
 
-        transactions = transactions.order_by(Transactions.date_of_spent).all()
+        transactions = transactions.order_by(Transactions.date_of_spent.desc(), Transactions.id.desc()).all()
         result = {'count': len(transactions), 'transactions': []}
         for transaction in transactions:
             result['transactions'].append({
@@ -407,7 +407,7 @@ def transactions():
             return Response(json.dumps({'status': 'ERROR', 'description': error}), mimetype="application/json",
                             status=500)
         return Response(json.dumps({'status': 'SUCCESS', 'description': 'DELETED'}), mimetype="application/json",
-                        status=201)
+                        status=200)
     else:
         return Response(json.dumps({'status': 'ERROR', 'description': 'Method not allowed.'}), mimetype="application/json", status=405)
 
