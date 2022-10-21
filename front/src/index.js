@@ -37,9 +37,9 @@ function App() {
       <Router>
         <Navigation />
         <Routes>
-          <Route path="/" element={<Reports />} />
-          <Route path="/settings" element={<Settings />} />
-          <Route path="/categories" element={<Categories />} />
+          <Route path="/" element={<Reports token={token} />} />
+          <Route path="/settings" element={<Settings token={token} />} />
+          <Route path="/categories" element={<Categories token={token} />} />
           <Route path="/transactions" element={<Transactions token={token} />} />
           <Route path="/login" element={<Login />} />
         </Routes>

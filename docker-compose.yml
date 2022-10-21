@@ -25,6 +25,14 @@ services:
     networks:
       - web
       - internal
+  moneylogger_front:
+    container_name: moneylogger_front
+    image: moneylogger_front
+    restart: unless-stopped
+    ports:
+      - 80:3000
+    networks:
+      - web
 
 #  moneylogger_celery:
 #    container_name: moneylogger_celery

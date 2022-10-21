@@ -6,7 +6,8 @@ RUN mkdir -p /srv
 COPY requirements.txt /srv/requirements.txt
 WORKDIR /srv
 RUN pip3 install -r requirements.txt
-COPY . /srv/
+COPY uwsgi.ini /srv/
+COPY application /srv/application
 RUN mkdir -p /srv/downloads
 WORKDIR /srv/application
 ENV PYTHONIOENCODING=utf8

@@ -415,7 +415,7 @@ def transactions():
 @is_authorized()
 def categories():
     if request.method == 'GET':
-        categories = Categories.query.filter(Categories.user_id == get_current_user()).all()
+        categories = Categories.query.filter(Categories.user_id == get_current_user()).order_by(Categories.income.desc(), Categories.id).all()
         result = {'count': len(categories), 'categories': []}
         for category in categories:
             result['categories'].append({
@@ -530,7 +530,7 @@ def categories():
             return Response(json.dumps({'status': 'ERROR', 'description': error}), mimetype="application/json",
                             status=500)
         return Response(json.dumps({'status': 'SUCCESS', 'description': 'DELETED'}), mimetype="application/json",
-                        status=201)
+                        status=200)
     else:
         return Response(json.dumps({'status': 'ERROR', 'description': 'Method not allowed.'}), mimetype="application/json", status=405)
 
@@ -616,9 +616,9 @@ def login():
 
 
 
-@app.route('/logout', methods=['POST'])
+@app.route('/destroy_token', methods=['POST'])
 @is_authorized()
-def logout():
+def destroy_token():
     token = request.headers.get('Authorization', None)
     if token:
         user = User.query.filter(User.token == token).first()
