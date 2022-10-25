@@ -14,4 +14,5 @@ ENV PYTHONIOENCODING=utf8
 ENV LC_ALL=en_US.utf-8
 ENV LANG=en_US.utf-8
 #RUN chmod -R 744 /srv
+EXPOSE 80/tcp
 CMD ["uwsgi","/srv/uwsgi.ini"]
