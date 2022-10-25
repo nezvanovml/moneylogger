@@ -6,9 +6,9 @@ networks:
     external: false
 
 services:
-  moneylogger_app:
-    container_name: moneylogger_app
-    image: moneylogger_app
+  moneylogger_back:
+    container_name: moneylogger_back
+    image: moneylogger_back
     restart: unless-stopped
     environment:
       FLASK_APP: app.py
@@ -19,24 +19,26 @@ services:
     volumes:
       - volume_moneylogger_downloads:/srv/downloads
     ports:
-      - 81:8888
+      - 81:80
     depends_on:
       - moneylogger_postgres_db
     networks:
       - web
       - internal
+
   moneylogger_front:
     container_name: moneylogger_front
     image: moneylogger_front
     restart: unless-stopped
     ports:
-      - 80:3000
+      - 80:80
     networks:
       - web
+      - internal
 
 #  moneylogger_celery:
 #    container_name: moneylogger_celery
-#    image: moneylogger_app
+#    image: moneylogger_back
 #    restart: unless-stopped
 #    command: celery -A tasks.celery worker -l INFO -c 1 --max-memory-per-child 1000000 --max-tasks-per-child 50
 #    environment:

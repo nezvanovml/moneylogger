@@ -21,7 +21,7 @@ function Transactions({ token }) {
     const [selectedTransaction, setSelectedTransaction] = useState({});
 
     const loadData = (start, end, category) =>{
-        fetch('http://192.168.0.222:81/transactions?start_date='+start+'&end_date='+end+'&category='+category, {headers: {'Authorization': token}})
+        fetch('/api/transactions?start_date='+start+'&end_date='+end+'&category='+category, {headers: {'Authorization': token}})
              .then((response) => response.json())
              .then((data) => {
                 console.log(data);
@@ -32,7 +32,7 @@ function Transactions({ token }) {
                 console.log(err.message);
              });
 
-        fetch('http://192.168.0.222:81/categories',{headers: {'Authorization': token}})
+        fetch('/api/categories',{headers: {'Authorization': token}})
              .then((response) => response.json())
              .then((data) => {
                 console.log(data);
@@ -59,7 +59,7 @@ function Transactions({ token }) {
         let id = e.target.elements.id.value;
         if(sum < 0) sum = sum * (-1);
         if (!(categories.find(o => o.id == category).income)) sum = sum * (-1);
-        let result = await fetch('http://192.168.0.222:81/transactions?category='+category+'&date='+date+'&sum='+sum+'&comment='+comment+'&transaction='+id, { method: 'POST', headers: {'Authorization': token}})
+        let result = await fetch('/api/transactions?category='+category+'&date='+date+'&sum='+sum+'&comment='+comment+'&transaction='+id, { method: 'POST', headers: {'Authorization': token}})
         if (result.status == 201) loadData(startDate, endDate, searchCategory);
 
     }
@@ -73,7 +73,7 @@ function Transactions({ token }) {
         let comment = e.target.elements.comment.value;
         if(sum < 0) sum = sum * (-1);
         if (!(categories.find(o => o.id == category).income)) sum = sum * (-1);
-        let result = await fetch('http://192.168.0.222:81/transactions?category='+category+'&date='+date+'&sum='+sum+'&comment='+comment, { method: 'PUT', headers: {'Authorization': token}})
+        let result = await fetch('/api/transactions?category='+category+'&date='+date+'&sum='+sum+'&comment='+comment, { method: 'PUT', headers: {'Authorization': token}})
         if (result.status == 201) {
             loadData(startDate, endDate, searchCategory);
             e.target.reset()
@@ -82,7 +82,7 @@ function Transactions({ token }) {
 
     const deleteTransaction = async (id) => {
         console.log('Delete: '+id)
-        let result = await fetch('http://192.168.0.222:81/transactions?transaction='+id, { method: 'DELETE', headers: {'Authorization': token}})
+        let result = await fetch('/api/transactions?transaction='+id, { method: 'DELETE', headers: {'Authorization': token}})
         if (result.status == 200) loadData(startDate, endDate, searchCategory);
     }
 

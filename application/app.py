@@ -25,7 +25,7 @@ config = get_config(config_path)
 
 #initialize flaskapp object
 app = Flask(__name__)
-CORS(app)
+#CORS(app)
 
 app.config['WTF_CSRF_ENABLED'] = False
 app.config['MAX_CONTENT_LENGTH'] = 1024 * 1024 * 10

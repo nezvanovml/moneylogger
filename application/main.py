@@ -84,7 +84,7 @@ def remove_role_for_user(user_id, role_id):
         return False
 
 
-def change_password(user_id, password):
+def change_password_authoritative(user_id, password):
     user = User.query.filter(User.id == user_id).first()
     if user and len(password) > 0:
         pattern = r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$'  # от 8 символов в разном регистре с цифрами
@@ -106,7 +106,6 @@ def change_password(user_id, password):
         else:
             return True
     return False
-
 
 def have_roles(needed_roles):
     def wrapper(fn):
@@ -162,9 +161,13 @@ def is_authorized():
 
     return wrapper
 
+@app.after_request
+def per_request_callbacks(response):
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    return response
 
 # Create a user to test with
-@app.route("/init", methods=['GET'])
+@app.route("/api/init", methods=['GET'])
 def initialization():
     admin_role = add_role("SUPERUSER", "SUPERUSER ROLE")
     user_role = add_role("USER", "Standard user")
@@ -178,7 +181,7 @@ def initialization():
                     status=200)
 
 
-@app.route('/transactions', methods=['GET', 'POST', 'PUT', 'DELETE'])
+@app.route('/api/transactions', methods=['GET', 'POST', 'PUT', 'DELETE'])
 @is_authorized()
 def transactions():
     if request.method == 'GET':
@@ -411,7 +414,7 @@ def transactions():
     else:
         return Response(json.dumps({'status': 'ERROR', 'description': 'Method not allowed.'}), mimetype="application/json", status=405)
 
-@app.route('/categories', methods=['GET', 'POST', 'PUT', 'DELETE'])
+@app.route('/api/categories', methods=['GET', 'POST', 'PUT', 'DELETE'])
 @is_authorized()
 def categories():
     if request.method == 'GET':
@@ -534,7 +537,95 @@ def categories():
     else:
         return Response(json.dumps({'status': 'ERROR', 'description': 'Method not allowed.'}), mimetype="application/json", status=405)
 
-@app.route('/import/csv', methods=['POST'])
+@app.route('/api/user_info', methods=['GET', 'POST'])
+@is_authorized()
+def user_info():
+    if request.method == 'GET':
+        user = User.query.filter(User.id == get_current_user()).first()
+        if user:
+            result = {
+                    'id': user.id,
+                    'email': user.email,
+                    'first_name': user.first_name,
+                    'last_name': user.last_name,
+                    'gender': user.gender,
+                    'birthdate': user.birthdate.strftime("%Y-%m-%d")
+                    }
+            return Response(json.dumps(result), mimetype="application/json", status=200)
+        else:
+            return Response(
+                json.dumps({'status': 'ERROR', 'description': f"User not found."}),
+                mimetype="application/json",
+                status=404)
+    elif request.method == 'POST':
+        need_update = False
+        user = User.query.filter(User.id == get_current_user()).first()
+        if not user:
+            return Response(
+                json.dumps({'status': 'ERROR', 'description': f"User not found."}),
+                mimetype="application/json",
+                status=404)
+
+        email = request.args.get('email', None)
+        if email:
+            if not re.fullmatch(r"[^@]+@[^@]+\.[^@]+", email):
+                return Response(json.dumps({'status': 'ERROR', 'description': f"Incorrect format of email."}),
+                                mimetype="application/json",
+                                status=400)
+            user.email = email
+            need_update = True
+
+        first_name = request.args.get('first_name', None)
+        if first_name:
+            user.first_name = first_name
+            need_update = True
+
+        last_name = request.args.get('last_name', None)
+        if last_name:
+            user.last_name = last_name
+            need_update = True
+
+        gender = request.args.get('gender', None)
+        if gender:
+            if gender == 'male':
+                user.gender = 'male'
+                need_update = True
+            elif gender == 'female':
+                user.gender = 'female'
+                need_update = True
+            else:
+                return Response(json.dumps({'status': 'ERROR', 'description': f"Incorrect format of gender. Must be male/female."}),
+                                mimetype="application/json",
+                                status=400)
+
+        birthdate = request.args.get('birthdate', None)
+        if birthdate:
+            try:
+                date = datetime.datetime.strptime(birthdate, '%Y-%m-%d').date()
+            except ValueError:
+                return Response(json.dumps({'status': 'ERROR', 'description': f"Incorrect format of birthdate. Must be YYYY-MM-DD."}),
+                                mimetype="application/json",
+                                status=400)
+            user.birthdate = date
+            need_update = True
+        if need_update:
+            try:
+                db.session.commit()
+            except Exception as error:
+                db.session.rollback()
+                return Response(json.dumps({'status': 'ERROR', 'description': error}), mimetype="application/json",
+                                status=500)
+            return Response(json.dumps({'status': 'SUCCESS', 'description': 'UPDATED', 'id': user.id}), mimetype="application/json",
+                            status=201)
+        else:
+            return Response(json.dumps({'status': 'ERROR', 'description': 'No data for update'}),
+                            mimetype="application/json",
+                            status=400)
+    else:
+        return Response(json.dumps({'status': 'ERROR', 'description': 'Method not allowed.'}), mimetype="application/json", status=405)
+
+
+@app.route('/api/import/csv', methods=['POST'])
 @is_authorized()
 def load_from_csv_monefy():
     if 'file' not in request.files:
@@ -593,7 +684,7 @@ def load_from_csv_monefy():
             return Response("OK", mimetype="text/html", status=200)
     return Response(f"Empty file provided.", mimetype="text/html", status=400)
 
-@app.route('/login', methods=['POST'])
+@app.route('/api/login', methods=['POST'])
 def login():
     if not request.is_json:
         return Response(json.dumps({'status': 'ERROR', 'description': 'Provide correct JSON structure.'}),
@@ -616,7 +707,7 @@ def login():
 
 
 
-@app.route('/destroy_token', methods=['POST'])
+@app.route('/api/destroy_token', methods=['POST'])
 @is_authorized()
 def destroy_token():
     token = request.headers.get('Authorization', None)
@@ -630,13 +721,66 @@ def destroy_token():
     return Response(json.dumps({'status': 'ERROR', 'description': 'check provided credentials.'}),
                     mimetype="application/json", status=404)
 
-@app.route('/checkauth', methods=['GET'])
+@app.route('/api/change_password', methods=['POST'])
+@is_authorized()
+def change_password_ordinary():
+
+    if not request.is_json:
+        return Response(json.dumps({'status': 'ERROR', 'description': 'Provide correct JSON structure.'}),
+                        mimetype="application/json", status=400)
+    data = request.get_json()
+    if data:
+        old_password = data.get('old_password', None)
+        new_password = data.get('new_password', None)
+        user_id = get_current_user()
+
+        if not old_password or not new_password:
+            return Response(json.dumps({'status': 'ERROR', 'description': f"Passwords not provided."}),
+                            mimetype="application/json",
+                            status=400)
+        user = User.query.filter(User.id == user_id, User.password == hashlib.sha256(old_password.encode('utf-8')).hexdigest()).first()
+        if user and len(new_password) > 0 and len(old_password) > 0:
+            pattern = r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$'  # от 8 символов в разном регистре с цифрами
+            hashed_password = hashlib.sha256(new_password.encode('utf-8')).hexdigest()
+            if re.match(pattern, new_password) is None:
+                return Response(json.dumps({'status': 'ERROR', 'description': f"Password not matches security policy."}),
+                                mimetype="application/json",
+                                status=400)
+            elif check_password_was_not_used_earlier(hashed_password, user.password_previous):
+                return Response(json.dumps({'status': 'ERROR', 'description': f"Password was used earlier."}),
+                                mimetype="application/json",
+                                status=400)
+            user.password = hashed_password
+            if not user.password_previous:
+                user.password_previous = hashed_password
+            else:
+                user.password_previous = f"{user.password_previous};{hashed_password}"
+            try:
+                db.session.commit()
+            except Exception as error:
+                db.session.rollback()
+                return Response(json.dumps({'status': 'ERROR', 'description': error}),
+                                mimetype="application/json",
+                                status=500)
+            else:
+                return Response(json.dumps({'status': 'SUCCESS', 'description': 'Password changed.'}),
+                                mimetype="application/json", status=201)
+        return Response(json.dumps({'status': 'ERROR', 'description': f"Old password not matches."}),
+                        mimetype="application/json",
+                        status=400)
+    return Response(json.dumps({'status': 'ERROR', 'description': 'check provided data format.'}),
+                    mimetype="application/json", status=400)
+
+@app.route('/api/checkauth', methods=['GET'])
 @is_authorized()
 def checkauth():
     return Response(json.dumps({'status': 'SUCCESS', 'description': 'Token is correct.'}),
                             mimetype="application/json", status=200)
 
-
+@app.route('/api/heartbeat', methods=['GET'])
+def heartbeat():
+    return Response(json.dumps({'status': 'SUCCESS', 'description': 'I am alive!'}),
+                            mimetype="application/json", status=200)
 
 if __name__ == "__main__":
     app.run(debug=False)

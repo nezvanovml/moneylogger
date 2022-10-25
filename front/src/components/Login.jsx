@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 async function loginUser(credentials) {
 console.log(JSON.stringify(credentials))
- return fetch('http://192.168.0.222:81/login', {
+ return fetch('/api/login', {
    method: 'POST',
    headers: {
      'Content-Type': 'application/json'
@@ -42,8 +42,7 @@ export default function Login({ setToken }) {
       <main className="form-signin w-100 mt-5 m-auto">
 
         <form onSubmit={handleSubmit}>
-            <img className="mb-4" src="https://getbootstrap.com/docs/5.2/assets/brand/bootstrap-logo.svg" alt="" width="72" height="57" />
-            <h1 className="h3 mb-3 fw-normal">Войти в систему</h1>
+            <h1 className="h3 mb-3 fw-normal">MoneyLogger</h1>
           <div className="form-floating">
             <input type="email" className="form-control" id="InputEmail" onChange={e => setEmail(e.target.value)}/>
             <label htmlFor="InputEmail">Email</label>

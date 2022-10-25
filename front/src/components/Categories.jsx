@@ -1,20 +1,13 @@
 import React, { useState, useEffect } from "react";
 
-const subtractMonths = (date, months) => {
-      const result = new Date(date);
-      result.setMonth(result.getMonth() - months);
-      return result;
-    };
 
 
 function Categories({ token }) {
     const [categories, setCategories] = useState([]);
     const [categoriesNumber, setCategoriesNumber] = useState(0);
 
-
-
     const loadData = () =>{
-        fetch('http://192.168.0.222:81/categories',{headers: {'Authorization': token}})
+        fetch('/api/categories',{headers: {'Authorization': token}})
              .then((response) => response.json())
              .then((data) => {
                 console.log(data);
@@ -34,7 +27,7 @@ function Categories({ token }) {
 
         console.log(name, description)
 
-        let result = await fetch('http://192.168.0.222:81/categories?name='+name+'&description='+description+'&category='+id, { method: 'POST', headers: {'Authorization': token}})
+        let result = await fetch('/api/categories?name='+name+'&description='+description+'&category='+id, { method: 'POST', headers: {'Authorization': token}})
         if (result.status == 201) loadData();
 
     }
@@ -50,7 +43,7 @@ function Categories({ token }) {
         if (type == 'income') type = 'True'
         else type = 'False'
 
-        let result = await fetch('http://192.168.0.222:81/categories?name='+name+'&income='+type+'&description='+description, { method: 'PUT', headers: {'Authorization': token}})
+        let result = await fetch('/api/categories?name='+name+'&income='+type+'&description='+description, { method: 'PUT', headers: {'Authorization': token}})
         if (result.status == 201) {
             loadData();
             e.target.reset()
@@ -59,7 +52,7 @@ function Categories({ token }) {
 
     const deleteCategory = async (id) => {
         console.log('Delete: '+id)
-        let result = await fetch('http://192.168.0.222:81/categories?category='+id, { method: 'DELETE', headers: {'Authorization': token}})
+        let result = await fetch('/api/categories?category='+id, { method: 'DELETE', headers: {'Authorization': token}})
         if (result.status == 200) loadData();
     }
 
@@ -97,10 +90,10 @@ function Categories({ token }) {
                                                                         <input type="text" name="description" className="form-control" placeholder="Описание"/>
                                                                 </div>
                                                                 <div className="d-flex w-100 justify-content-around mb-3">
-                                                                        <input type="radio" className="btn-check" value="income" name="type" id="success-outlined" autocomplete="off"  />
-                                                                        <label className="btn btn-outline-success" for="success-outlined">Доход</label>
-                                                                        <input type="radio" className="btn-check" value="spent" name="type" id="danger-outlined" autocomplete="off" checked={true} />
-                                                                        <label className="btn btn-outline-danger" for="danger-outlined">Расход</label>
+                                                                        <input type="radio" className="btn-check" value="income" name="type" id="success-outlined" autoComplete="off"  />
+                                                                        <label className="btn btn-outline-success" htmlFor="success-outlined">Доход</label>
+                                                                        <input type="radio" className="btn-check" value="spent" name="type" id="danger-outlined" autoComplete="off" defaultChecked={true} />
+                                                                        <label className="btn btn-outline-danger" htmlFor="danger-outlined">Расход</label>
                                                                 </div>
                                                                 <div className="d-flex w-100 justify-content-center">
                                                                     <button type="submit" className="btn btn-primary" >Добавить</button>
@@ -128,10 +121,10 @@ function Categories({ token }) {
                                                                         <input type="text" name="description" className="form-control" placeholder="Описание" defaultValue={category.description}/>
                                                                 </div>
                                                                 <div className="d-flex w-100 justify-content-around mb-3">
-                                                                        <input type="radio" className="btn-check" value="income" name="type" id="success-outlined" autocomplete="off" defaultChecked ={category.income} />
-                                                                        <label className="btn btn-outline-success" for="success-outlined">Доход</label>
-                                                                        <input type="radio" className="btn-check" value="spent" name="type" id="danger-outlined" autocomplete="off" defaultChecked ={!category.income} />
-                                                                        <label className="btn btn-outline-danger" for="danger-outlined">Расход</label>
+                                                                        <input type="radio" className="btn-check" value="income" name="type" id="success-outlined" autoComplete="off" defaultChecked ={category.income} />
+                                                                        <label className="btn btn-outline-success" htmlFor="success-outlined">Доход</label>
+                                                                        <input type="radio" className="btn-check" value="spent" name="type" id="danger-outlined" autoComplete="off" defaultChecked ={!category.income} />
+                                                                        <label className="btn btn-outline-danger" htmlFor="danger-outlined">Расход</label>
                                                                 </div>
                                                                 <div className="d-flex w-100 justify-content-between">
                                                                         <button type="button" className="btn btn-danger" onClick={e => deleteCategory(category.id)}>Удалить</button>
