@@ -35,6 +35,7 @@ services:
       - "traefik.port=80"
       - "traefik.http.routers.moneylogger.tls=true"
       - "traefik.http.routers.moneylogger.tls.certresolver=letsEncrypt"
+      - "traefik.http.routers.moneylogger.rule=Host(`money.nezvanov.ru`)"
     networks:
       - web
       - internal
