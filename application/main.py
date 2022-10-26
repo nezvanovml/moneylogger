@@ -627,7 +627,7 @@ def user_info():
 
 @app.route('/api/import/csv', methods=['POST'])
 @is_authorized()
-def load_from_csv_monefy():
+def load_from_csv():
     if 'file' not in request.files:
         return Response(f"Provide file sent in form, where key=file", mimetype="text/html", status=400)
     file = request.files['file']
@@ -683,6 +683,24 @@ def load_from_csv_monefy():
             os.remove(os.path.join(app.config['UPLOAD_FOLDER'], filename))
             return Response("OK", mimetype="text/html", status=200)
     return Response(f"Empty file provided.", mimetype="text/html", status=400)
+
+@app.route('/api/export/csv', methods=['GET'])
+@is_authorized()
+def export_to_csv():
+    user_id = get_current_user()
+
+    transactions = Transactions.query.filter(Transactions.user_id == get_current_user()).order_by(Transactions.date_of_spent.desc(), Transactions.id.desc()).all()
+
+    for transaction in transactions:
+        result['transactions'].append({
+            'id': transaction.id,
+            'category': transaction.category_id,
+            'date': transaction.date_of_spent.strftime("%Y-%m-%d"),
+            'sum': transaction.sum,
+            'comment': transaction.comment
+        })
+    return Response(json.dumps(result), mimetype="application/json", status=200)
+
 
 @app.route('/api/login', methods=['POST'])
 def login():
