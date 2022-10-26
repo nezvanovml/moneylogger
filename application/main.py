@@ -691,13 +691,12 @@ def export_to_csv():
     user_id = get_current_user()
 
     transactions = Transactions.query.filter(Transactions.user_id == user_id).join(Categories, Transactions.category_id==Categories.id).order_by(Transactions.date_of_spent.desc(), Transactions.id.desc()).all()
-# .add_columns(Categories.name, Transactions.sum, Transactions.date_of_spent, Transactions.comment)
     with io.StringIO() as csvfile:
         fieldnames = ['date', 'category', 'amount', 'description']
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames, delimiter=';')
         writer.writeheader()
         for transaction in transactions:
-            writer.writerow({'date': transaction.date_of_spent.strftime("%Y-%m-%d"), 'category': transaction.category_id, 'amount': transaction.sum, 'description': transaction.comment})
+            writer.writerow({'date': transaction.date_of_spent.strftime("%Y-%m-%d"), 'category': transaction.name, 'amount': transaction.sum, 'description': transaction.comment})
         csvfile.seek(0)
         return Response(csvfile.read(), mimetype="text/csv", status=200)
 
