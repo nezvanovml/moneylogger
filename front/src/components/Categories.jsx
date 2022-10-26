@@ -19,33 +19,32 @@ function Categories({ token }) {
              });
     };
 
-//     const updateCategory = async e => {
-//         e.preventDefault();
-//         let id = e.target.elements.id.value;
-//         let name = e.target.elements.name.value;
-//         let description = e.target.elements.description.value;
-//
-//         console.log(name, description)
-//
-//         let result = await fetch('/api/categories?name='+name+'&description='+description+'&category='+id, { method: 'POST', headers: {'Authorization': token}})
-//         if (result.status == 201) loadData();
-//
-//     }
+    const updateCategory = async e => {
+        e.preventDefault();
+        let id = e.target.elements.id.value;
+        let name = e.target.elements.name.value;
+        let type = e.target.elements.type.value;
+        let description = e.target.elements.description.value;
+        if (type == 'income') type = 'True'
+        else type = 'False'
+        console.log(id, name, description, type)
+
+        let result = await fetch('/api/categories?name='+name+'&description='+description+'&category='+id+'&income='+type, { method: 'POST', headers: {'Authorization': token}})
+        if (result.status == 201) loadData();
+
+    }
 
     const updateCategory = async e => {
 
         let id = e.target.elements.id.value;
         let name = e.target.elements.name.value;
-        let type = e.target.elements.type.value;
+        let income = e.target.elements.type.value;
         let description = e.target.elements.description.value;
 
-        if (type == 'income') type = 'True'
-        else type = 'False'
-
-        console.log(name, description, type)
+        console.log(name, description)
 
 
-        let result = await fetch('/api/categories?name='+name+'&description='+description+'&category='+id+'&income='+type, { method: 'POST', headers: {'Authorization': token}})
+        let result = await fetch('/api/categories?name='+name+'&description='+description+'&category='+id, { method: 'POST', headers: {'Authorization': token}})
         if (result.status == 201){
             loadData();
         }
@@ -135,22 +134,23 @@ function Categories({ token }) {
                                         </div>
                                         <div className="collapse" id={"collapseExample"+category.id}>
                                                 <div className="card card-body">
-                                                        <form >
+                                                        <form onSubmit={updateCategory}>
                                                                 <input type="text" className="visually-hidden" name="id" defaultValue={category.id} />
                                                                 <div className="mb-3">
-                                                                        <input type="text" name="name" className="form-control" placeholder="Название" defaultValue={category.name} aria-describedby="basic-addon2" onChange={updateCategory} />
+                                                                        <input type="text" name="name" className="form-control" placeholder="Название" defaultValue={category.name} aria-describedby="basic-addon2" />
                                                                 </div>
                                                                 <div className="mb-3">
-                                                                        <input type="text" name="description" className="form-control" placeholder="Описание" defaultValue={category.description} onChange={updateCategory}/>
+                                                                        <input type="text" name="description" className="form-control" placeholder="Описание" defaultValue={category.description}/>
                                                                 </div>
                                                                 <div className="d-flex w-100 justify-content-around mb-3">
-                                                                        <input type="radio" className="btn-check" value="income" name="type" id="success-outlined"  checked ={category.income} onChange={updateCategory} />
+                                                                        <input type="radio" className="btn-check" value="income" name="type" id="success-outlined" checked ={category.income} />
                                                                         <label className="btn btn-outline-success" htmlFor="success-outlined">Доход</label>
-                                                                        <input type="radio" className="btn-check" value="spent" name="type" id="danger-outlined"  checked ={!category.income} onChange={updateCategory} />
+                                                                        <input type="radio" className="btn-check" value="spent" name="type" id="danger-outlined" checked ={!category.income} />
                                                                         <label className="btn btn-outline-danger" htmlFor="danger-outlined">Расход</label>
                                                                 </div>
                                                                 <div className="d-flex w-100 justify-content-between">
                                                                         <button type="button" className="btn btn-danger" onClick={e => deleteCategory(category.id)}>Удалить</button>
+                                                                        <button type="submit" className="btn btn-success" >Сохранить</button>
                                                                 </div>
                                                         </form>
                                                 </div>
