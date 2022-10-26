@@ -699,7 +699,6 @@ def export_to_csv():
         for transaction in transactions:
             writer.writerow({'date': transaction.date_of_spent.strftime("%Y-%m-%d"), 'category': transaction.category_id, 'amount': transaction.sum, 'description': transaction.comment})
         csvfile.seek(0)
-        print(csvfile.read())
         return Response(csvfile.read(), mimetype="text/csv", status=200)
 
     return Response(json.dumps({'status': 'ERROR', 'description': 'Something went wrong.'}),
