@@ -34,25 +34,6 @@ function Categories({ token }) {
 
     }
 
-    const updateCategory = async e => {
-
-        let id = e.target.elements.id.value;
-        let name = e.target.elements.name.value;
-        let income = e.target.elements.type.value;
-        let description = e.target.elements.description.value;
-
-        console.log(name, description)
-
-
-        let result = await fetch('/api/categories?name='+name+'&description='+description+'&category='+id, { method: 'POST', headers: {'Authorization': token}})
-        if (result.status == 201){
-            loadData();
-        }
-        else {
-            console.log(result)
-        }
-
-    }
 
     const addCategory = async e => {
         e.preventDefault();
