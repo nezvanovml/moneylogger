@@ -16,7 +16,7 @@ function Settings({ token }) {
     const [AlertMain, setAlertMain] = useState({'error':{'show': false, 'text': ''}, 'success': {'show': false, 'text': ''}});
 
     const exportData = () => {
-		fetch('/api/export/csv')
+		fetch('/api/export/csv', { method: 'GET', headers: {'Authorization': token}})
 			.then(response => {
 				response.blob().then(blob => {
 					let url = window.URL.createObjectURL(blob);
