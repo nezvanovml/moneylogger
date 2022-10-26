@@ -690,7 +690,7 @@ def load_from_csv():
 def export_to_csv():
     user_id = get_current_user()
 
-    transactions = Transactions.query.filter(Transactions.user_id == user_id).join(Categories, Transactions.category_id==Categories.id).order_by(Transactions.date_of_spent.desc(), Transactions.id.desc()).all()
+    transactions = Transactions.query.filter(Transactions.user_id == user_id).join(Categories, Transactions.category_id==Categories.id).add_columns(Categories.name, Transactions.sum, Transactions.date_of_spent, Transactions.comment).order_by(Transactions.date_of_spent.desc(), Transactions.id.desc()).all()
     with io.StringIO() as csvfile:
         fieldnames = ['date', 'category', 'amount', 'description']
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames, delimiter=';')

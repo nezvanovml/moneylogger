@@ -25,7 +25,7 @@ function Reports({ token }) {
 
 
     const loadData = (start, end, category) =>{
-        fetch('http://192.168.0.222:81/transactions?start_date='+start+'&end_date='+end+'&category='+category, {headers: {'Authorization': token}})
+        fetch('/api/transactions?start_date='+start+'&end_date='+end+'&category='+category, {headers: {'Authorization': token}})
              .then((response) => response.json())
              .then((data) => {
                 console.log(data);
@@ -36,7 +36,7 @@ function Reports({ token }) {
                 console.log(err.message);
              });
 
-        fetch('http://192.168.0.222:81/categories',{headers: {'Authorization': token}})
+        fetch('/api/categories',{headers: {'Authorization': token}})
              .then((response) => response.json())
              .then((data) => {
                 console.log(data);
