@@ -124,9 +124,9 @@ function Categories({ token }) {
                                                                         <input type="text" name="description" className="form-control" placeholder="Описание" defaultValue={category.description}/>
                                                                 </div>
                                                                 <div className="d-flex w-100 justify-content-around mb-3">
-                                                                        <input type="radio" className="btn-check" value="income" name="type" id="success-outlined" checked ={category.income} />
+                                                                        <input type="radio" className="btn-check" value="income" name="type" id="success-outlined" defaultChecked ={category.income} />
                                                                         <label className="btn btn-outline-success" htmlFor="success-outlined">Доход</label>
-                                                                        <input type="radio" className="btn-check" value="spent" name="type" id="danger-outlined" checked ={!category.income} />
+                                                                        <input type="radio" className="btn-check" value="spent" name="type" id="danger-outlined" defaultChecked ={!category.income} />
                                                                         <label className="btn btn-outline-danger" htmlFor="danger-outlined">Расход</label>
                                                                 </div>
                                                                 <div className="d-flex w-100 justify-content-between">
