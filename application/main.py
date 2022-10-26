@@ -630,7 +630,9 @@ def user_info():
 @is_authorized()
 def load_from_csv():
     if 'file' not in request.files:
-        return Response(f"Provide file sent in form, where key=file", mimetype="text/html", status=400)
+        return Response(json.dumps({'status': 'ERROR',
+                                    'description': 'Provide file sent in form, where key=file.'}),
+                        mimetype="application/json", status=400)
     file = request.files['file']
     if file.filename != '':
         if file and allowed_file(file.filename, ALLOWED_EXTENSIONS):
@@ -641,10 +643,10 @@ def load_from_csv():
                 required_fields = ['date', 'category', 'amount', 'description']
                 for field in required_fields:
                     if field not in reader.fieldnames:
-                        return Response(f"Error adding data from file. It seems, that file have no required columns.",
-                                        mimetype="text/html",
-                                        status=400)
+                        return Response(json.dumps({'status': 'ERROR', 'description': 'Error adding data from file. It seems, that file have no required columns.'}),
+                                        mimetype="application/json", status=400)
                 user_id = get_current_user()
+                transactions_count = 0
                 for row in reader:
                     category = Categories.query.filter(Categories.name == row['category'],
                                                        Categories.user_id == user_id).first()
@@ -655,9 +657,9 @@ def load_from_csv():
                             db.session.commit()
                         except Exception as error:
                             db.session.rollback()
-                            return Response(f"Error adding data from file. Check file format. Description: {error}",
-                                            mimetype="text/html",
-                                            status=400)
+                            return Response(json.dumps({'status': 'ERROR', 'description': error}),
+                                            mimetype="application/json",
+                                            status=500)
                     try:
                         date = datetime.datetime.strptime(row['date'], '%d.%m.%Y').date()
                     except ValueError:
@@ -673,17 +675,21 @@ def load_from_csv():
                                                date_of_spent=date,
                                                sum=sum,
                                                comment=row['description'])
+                    transactions_count += 1
                     try:
                         db.session.add(transaction)
                         db.session.commit()
                     except Exception as error:
                         db.session.rollback()
-                        return Response(f"Error adding data from file. Check file format. Description: {error}",
-                                        mimetype="text/html",
-                                        status=400)
+                        return Response(json.dumps({'status': 'ERROR', 'description': error}),
+                                        mimetype="application/json",
+                                        status=500)
             os.remove(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            return Response("OK", mimetype="text/html", status=200)
-    return Response(f"Empty file provided.", mimetype="text/html", status=400)
+            return Response(json.dumps({'status': 'SUCCESS', 'transactions': transactions_count}), mimetype="application/json",
+                            status=200)
+    return Response(json.dumps({'status': 'ERROR', 'description': 'Empty file provided.'}),
+                    mimetype="application/json", status=400)
+
 
 @app.route('/api/export/csv', methods=['GET'])
 @is_authorized()
@@ -790,6 +796,47 @@ def change_password_ordinary():
                         status=400)
     return Response(json.dumps({'status': 'ERROR', 'description': 'check provided data format.'}),
                     mimetype="application/json", status=400)
+
+@app.route('/api/clear_all', methods=['DELETE'])
+@is_authorized()
+def clear_all():
+
+    if not request.is_json:
+        return Response(json.dumps({'status': 'ERROR', 'description': 'Provide correct JSON structure.'}),
+                        mimetype="application/json", status=400)
+    data = request.get_json()
+    if data:
+        password = data.get('password', None)
+        user_id = get_current_user()
+
+        if not password:
+            return Response(json.dumps({'status': 'ERROR', 'description': f"Password not provided."}),
+                            mimetype="application/json",
+                            status=400)
+        user = User.query.filter(User.id == user_id, User.password == hashlib.sha256(password.encode('utf-8')).hexdigest()).first()
+        if user:
+            Transactions.query.filter(Transactions.user_id == user_id).delete()
+            try:
+                db.session.commit()
+            except Exception as error:
+                db.session.rollback()
+                return Response(json.dumps({'status': 'ERROR', 'description': error}), mimetype="application/json",
+                                status=500)
+            Categories.query.filter(Categories.user_id == user_id).delete()
+            try:
+                db.session.commit()
+            except Exception as error:
+                db.session.rollback()
+                return Response(json.dumps({'status': 'ERROR', 'description': error}), mimetype="application/json",
+                                status=500)
+            return Response(json.dumps({'status': 'SUCCESS', 'description': 'DELETED'}), mimetype="application/json",
+                            status=200)
+        return Response(json.dumps({'status': 'ERROR', 'description': f"Password is incorrect."}),
+                        mimetype="application/json",
+                        status=400)
+    return Response(json.dumps({'status': 'ERROR', 'description': 'Check provided data format.'}),
+                    mimetype="application/json", status=400)
+
 
 @app.route('/api/checkauth', methods=['GET'])
 @is_authorized()
