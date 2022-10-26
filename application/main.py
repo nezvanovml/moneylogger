@@ -12,6 +12,7 @@ import csv
 import os
 import uuid
 import re
+import io
 from flask_mail import Message
 from utils import allowed_file, check_password_was_not_used_earlier, check_list1_is_in_list2
 from sqlalchemy.sql import select, update, insert, delete
@@ -689,17 +690,20 @@ def load_from_csv():
 def export_to_csv():
     user_id = get_current_user()
 
-    transactions = Transactions.query.filter(Transactions.user_id == get_current_user()).order_by(Transactions.date_of_spent.desc(), Transactions.id.desc()).all()
+    transactions = Transactions.query.filter(Transactions.user_id == user_id).order_by(Transactions.date_of_spent.desc(), Transactions.id.desc()).all()
 
-    for transaction in transactions:
-        result['transactions'].append({
-            'id': transaction.id,
-            'category': transaction.category_id,
-            'date': transaction.date_of_spent.strftime("%Y-%m-%d"),
-            'sum': transaction.sum,
-            'comment': transaction.comment
-        })
-    return Response(json.dumps(result), mimetype="application/json", status=200)
+    with io.StringIO() as csvfile:
+        fieldnames = ['date', 'category', 'amount', 'description']
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames, delimiter=';')
+        writer.writeheader()
+        for transaction in transactions:
+            writer.writerow({'date': transaction.date_of_spent.strftime("%Y-%m-%d"), 'category': transaction.category_id, 'amount': transaction.sum, 'description': transaction.comment})
+        csvfile.seek(0)
+        print(csvfile.read())
+        return Response(csvfile.read(), mimetype="text/csv", status=200)
+
+    return Response(json.dumps({'status': 'ERROR', 'description': 'Something went wrong.'}),
+                    mimetype="application/json", status=500)
 
 
 @app.route('/api/login', methods=['POST'])
