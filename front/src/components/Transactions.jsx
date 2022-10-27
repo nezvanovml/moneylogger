@@ -86,16 +86,26 @@ function Transactions({ token }) {
         if(sum < 0) sum = sum * (-1);
         if (!(categories.find(o => o.id == category).income)) sum = sum * (-1);
         let result = await fetch('/api/transactions?category='+category+'&date='+date+'&sum='+sum+'&comment='+comment, { method: 'PUT', headers: {'Authorization': token}})
-        if (result.status == 201) {
+        let json_data = await result.json()
+        if (json_data.status == 'SUCCESS') {
+            setAlertAdd({'error':{'show': false, 'text': ''}, 'success': {'show': true, 'text': 'Транзакция добавлена.'}});
             loadData(startDate, endDate, searchCategory);
             e.target.reset()
+        } else {
+            setAlertAdd({'error':{'show': true, 'text': 'Произошла ошибка при добавлении.'}, 'success': {'show': false, 'text': ''}});
         }
     }
 
     const deleteTransaction = async (id) => {
         console.log('Delete: '+id)
         let result = await fetch('/api/transactions?transaction='+id, { method: 'DELETE', headers: {'Authorization': token}})
-        if (result.status == 200) loadData(startDate, endDate, searchCategory);
+        let json_data = await result.json()
+        if (json_data.status == 'SUCCESS') {
+            setAlertUpdate({'error':{'show': false, 'text': ''}, 'success': {'show': true, 'text': 'Транзакция удалена.'}});
+            loadData(startDate, endDate, searchCategory);
+        } else {
+            setAlertUpdate({'error':{'show': true, 'text': 'Произошла ошибка при удалении.'}, 'success': {'show': false, 'text': ''}});
+        }
     }
 
     useEffect(() => {
