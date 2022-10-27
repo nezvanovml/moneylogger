@@ -182,7 +182,7 @@ function Transactions({ token }) {
                                 </li>
                                 {transactions.map((transaction) => {
                                     return (
-                                <li key={transaction.id} className={'list-group-item list-group-item-action text-dark bg-opacity-50 ' + ((categories.find(o => o.id == transaction.category).income > 0 ? "bg-success" : "bg-danger")}  aria-current="true">
+                                <li key={transaction.id} className={'list-group-item list-group-item-action text-dark bg-opacity-50 ' + (categories.find(o => o.id == transaction.category).income > 0 ? "bg-success" : "bg-danger")}  aria-current="true">
                                         <div data-bs-toggle="collapse" data-bs-target={"#collapseExample"+transaction.id} >
                                                 <div className="d-flex w-100 justify-content-between">
                                                         <p className="fs-6 mb-1">{categoriesDict[transaction.category.toString()]}</p>
