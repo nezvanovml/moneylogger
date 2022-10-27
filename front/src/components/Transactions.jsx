@@ -207,6 +207,7 @@ function Transactions({ token }) {
                                                                         <button type="button" className="btn btn-danger" onClick={e => deleteTransaction(transaction.id)}>Удалить</button>
                                                                         <button type="submit" className="btn btn-success" >Сохранить</button>
                                                                 </div>
+                                                                <Alert source={AlertUpdate} />
                                                         </form>
                                                 </div>
                                         </div>
