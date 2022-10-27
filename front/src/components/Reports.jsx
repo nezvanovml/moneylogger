@@ -23,7 +23,7 @@ function Reports({ token }) {
     const [income, setIncome] = useState(0);
     const [spent, setSpent] = useState(0);
 
-    const [AlertMain, setAlertMain] = useState({'error':{'show': true, 'text': ''}, 'success': {'show': true, 'text': ''}});
+    const [AlertMain, setAlertMain] = useState({'error':{'show': false, 'text': ''}, 'success': {'show': false, 'text': ''}});
 
 
     const loadData = (start, end, category) =>{

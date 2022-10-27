@@ -6,9 +6,9 @@ function Categories({ token }) {
     const [categories, setCategories] = useState([]);
     const [categoriesNumber, setCategoriesNumber] = useState(0);
 
-    const [AlertMain, setAlertMain] = useState({'error':{'show': true, 'text': ''}, 'success': {'show': true, 'text': ''}});
-    const [AlertUpdate, setAlertUpdate] = useState({'error':{'show': true, 'text': ''}, 'success': {'show': true, 'text': ''}});
-    const [AlertAdd, setAlertAdd] = useState({'error':{'show': true, 'text': ''}, 'success': {'show': true, 'text': ''}});
+    const [AlertMain, setAlertMain] = useState({'error':{'show': false, 'text': ''}, 'success': {'show': false, 'text': ''}});
+    const [AlertUpdate, setAlertUpdate] = useState({'error':{'show': false, 'text': ''}, 'success': {'show': false, 'text': ''}});
+    const [AlertAdd, setAlertAdd] = useState({'error':{'show': false, 'text': ''}, 'success': {'show': false, 'text': ''}});
 
     const loadData = () =>{
         fetch('/api/categories',{headers: {'Authorization': token}})

@@ -22,9 +22,9 @@ function Transactions({ token }) {
     const [selectedCategory, setSelectedCategory] = useState({});
     const [selectedTransaction, setSelectedTransaction] = useState({});
 
-    const [AlertMain, setAlertMain] = useState({'error':{'show': true, 'text': ''}, 'success': {'show': true, 'text': ''}});
-    const [AlertUpdate, setAlertUpdate] = useState({'error':{'show': true, 'text': ''}, 'success': {'show': true, 'text': ''}});
-    const [AlertAdd, setAlertAdd] = useState({'error':{'show': true, 'text': ''}, 'success': {'show': true, 'text': ''}});
+    const [AlertMain, setAlertMain] = useState({'error':{'show': false, 'text': ''}, 'success': {'show': false, 'text': ''}});
+    const [AlertUpdate, setAlertUpdate] = useState({'error':{'show': false, 'text': ''}, 'success': {'show': false, 'text': ''}});
+    const [AlertAdd, setAlertAdd] = useState({'error':{'show': false, 'text': ''}, 'success': {'show': false, 'text': ''}});
 
     const loadData = (start, end, category) =>{
         fetch('/api/transactions?start_date='+start+'&end_date='+end+'&category='+category, {headers: {'Authorization': token}})
