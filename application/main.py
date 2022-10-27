@@ -648,10 +648,19 @@ def load_from_csv():
                 user_id = get_current_user()
                 transactions_count = 0
                 for row in reader:
+                    try:
+                        sum = float(row['amount'])
+                    except ValueError:
+                        sum = 0.0
+
                     category = Categories.query.filter(Categories.name == row['category'],
                                                        Categories.user_id == user_id).first()
                     if not category:
-                        category = Categories(user_id=user_id, name=row['category'])
+                        if sum > 0:
+                            category = Categories(user_id=user_id, name=row['category'], income=True)
+                        else:
+                            sum = sum * (-1)
+                            category = Categories(user_id=user_id, name=row['category'], income=False)
                         try:
                             db.session.add(category)
                             db.session.commit()
@@ -665,10 +674,7 @@ def load_from_csv():
                     except ValueError:
                         date = datetime.datetime.utcnow()
 
-                    try:
-                        sum = float(row['amount'])
-                    except ValueError:
-                        sum = 0.0
+
 
                     transaction = Transactions(user_id=user_id,
                                                category_id=category.id,
