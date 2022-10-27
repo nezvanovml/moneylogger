@@ -63,8 +63,7 @@ function Transactions({ token }) {
         let category = e.target.elements.category.value;
         let comment = e.target.elements.comment.value;
         let id = e.target.elements.id.value;
-        if(sum < 0) sum = sum * (-1);
-        if (!(categories.find(o => o.id == category).income)) sum = sum * (-1);
+        //if (!(categories.find(o => o.id == category).income)) sum = sum * (-1);
         let result = await fetch('/api/transactions?category='+category+'&date='+date+'&sum='+sum+'&comment='+comment+'&transaction='+id, { method: 'POST', headers: {'Authorization': token}})
         let json_data = await result.json()
         if (json_data.status == 'SUCCESS') {
@@ -83,8 +82,7 @@ function Transactions({ token }) {
         let sum = e.target.elements.sum.value;
         let category = e.target.elements.category.value;
         let comment = e.target.elements.comment.value;
-        if(sum < 0) sum = sum * (-1);
-        if (!(categories.find(o => o.id == category).income)) sum = sum * (-1);
+        //if (!(categories.find(o => o.id == category).income)) sum = sum * (-1);
         let result = await fetch('/api/transactions?category='+category+'&date='+date+'&sum='+sum+'&comment='+comment, { method: 'PUT', headers: {'Authorization': token}})
         let json_data = await result.json()
         if (json_data.status == 'SUCCESS') {
@@ -184,7 +182,7 @@ function Transactions({ token }) {
                                 </li>
                                 {transactions.map((transaction) => {
                                     return (
-                                <li key={transaction.id} className={'list-group-item list-group-item-action text-dark bg-opacity-50 ' + (transaction.sum > 0 ? "bg-success" : "bg-danger")}  aria-current="true">
+                                <li key={transaction.id} className={'list-group-item list-group-item-action text-dark bg-opacity-50 ' + ((categories.find(o => o.id == transaction.category).income)) > 0 ? "bg-success" : "bg-danger")}  aria-current="true">
                                         <div data-bs-toggle="collapse" data-bs-target={"#collapseExample"+transaction.id} >
                                                 <div className="d-flex w-100 justify-content-between">
                                                         <p className="fs-6 mb-1">{categoriesDict[transaction.category.toString()]}</p>
