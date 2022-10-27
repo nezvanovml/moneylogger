@@ -66,7 +66,13 @@ function Transactions({ token }) {
         if(sum < 0) sum = sum * (-1);
         if (!(categories.find(o => o.id == category).income)) sum = sum * (-1);
         let result = await fetch('/api/transactions?category='+category+'&date='+date+'&sum='+sum+'&comment='+comment+'&transaction='+id, { method: 'POST', headers: {'Authorization': token}})
-        if (result.status == 201) loadData(startDate, endDate, searchCategory);
+        let json_data = await result.json()
+        if (json_data.status == 'SUCCESS') {
+            setAlertUpdate({'error':{'show': false, 'text': ''}, 'success': {'show': true, 'text': 'Данные сохранены.'}});
+            loadData(startDate, endDate, searchCategory);
+        } else {
+            setAlertUpdate({'error':{'show': true, 'text': 'Произошла ошибка при обновлении.'}, 'success': {'show': false, 'text': ''}});
+        }
 
     }
 

@@ -25,7 +25,7 @@ export default function Login({ setToken }) {
     let credentials = {'email': email, 'password': password}
     console.log(JSON.stringify(credentials))
 
-    let result = await fetch('https://money.nezvanov.ru/api/login', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(credentials)})
+    let result = await fetch('/api/login', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(credentials)})
     let json_data = await result.json()
     if(json_data.status == 'SUCCESS'){
         console.log('Token: ' + json_data.token)
