@@ -5,7 +5,6 @@ import * as serviceWorker from "./serviceWorker";
 import { BrowserRouter as Router, Route, Routes, useNavigate } from "react-router-dom";
 import useToken from './useToken';
 import {
-  Navigation,
   Footer,
   Reports,
   Settings,
@@ -14,35 +13,26 @@ import {
   Login
 } from "./components";
 
-//function setToken(userToken) {
-//    sessionStorage.setItem('token', userToken);
-//}
-//
-//function getToken() {
-//    const userToken = sessionStorage.getItem('token');
-//    return userToken
-//}
 
 
 function App() {
     const { token, setToken } = useToken();
 
-
-
-    if(!token) {
-        return <Login setToken={setToken} />
-    }
+    // if(!token) {
+    //     return <Login setToken={setToken} />
+    // }
 
     return (
       <Router>
-        <Navigation />
-        <Routes>
-          <Route path="/" element={<Reports token={token} />} />
-          <Route path="/settings" element={<Settings token={token} />} />
-          <Route path="/categories" element={<Categories token={token} />} />
-          <Route path="/transactions" element={<Transactions token={token} />} />
-          <Route path="/login" element={<Login />} />
-        </Routes>
+        <main className="flex-shrink-0">
+          <Routes>
+            <Route path="/" element={<Transactions token={token} />} />
+            <Route path="/settings" element={<Settings token={token} />} />
+            <Route path="/categories" element={<Categories token={token} />} />
+            <Route path="/reports" element={<Reports token={token} />} />
+            <Route path="/login" element={<Login />} />
+          </Routes>
+        </main>
         <Footer />
       </Router>
     );

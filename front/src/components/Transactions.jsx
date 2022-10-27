@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 
+import Alert from "./Alert.jsx";
+
 const subtractMonths = (date, months) => {
       const result = new Date(date);
       result.setMonth(result.getMonth() - months);
@@ -19,6 +21,10 @@ function Transactions({ token }) {
     const [searchCategory, setSearchCategory] = useState(null);
     const [selectedCategory, setSelectedCategory] = useState({});
     const [selectedTransaction, setSelectedTransaction] = useState({});
+
+    const [AlertMain, setAlertMain] = useState({'error':{'show': true, 'text': ''}, 'success': {'show': true, 'text': ''}});
+    const [AlertUpdate, setAlertUpdate] = useState({'error':{'show': true, 'text': ''}, 'success': {'show': true, 'text': ''}});
+    const [AlertAdd, setAlertAdd] = useState({'error':{'show': true, 'text': ''}, 'success': {'show': true, 'text': ''}});
 
     const loadData = (start, end, category) =>{
         fetch('/api/transactions?start_date='+start+'&end_date='+end+'&category='+category, {headers: {'Authorization': token}})
@@ -92,8 +98,8 @@ function Transactions({ token }) {
 
   return (
         <div className="container text-end mt-3 mb-3">
-              <div className="row">
-                    <div className="col text-left">
+              <div className="row justify-content-md-center ">
+                    <div className="col-lg text-end">
                           <h1>Транзакции</h1>
                           <form className=" ">
                                 <select className="form-select form-select-lg mb-3" onChange={e => setSearchCategory(e.target.value)}>
@@ -118,8 +124,9 @@ function Transactions({ token }) {
                                 <div className="col text-right fs-5">Найдено транзакций: </div>
                                 <div className="col text-left col-2 fs-5">{transactionsNumber}</div>
                           </div>
+                          <Alert source={AlertMain} />
                     </div>
-                    <div className="col">
+                    <div className="col-lg">
                           <ul className="list-group m-2 justify-content-between mb-5">
                                 <li className={'list-group-item list-group-item-action text-dark bg-opacity-50 '}>
                                         <div data-bs-toggle="collapse" data-bs-target={"#collapseNew"} >
@@ -152,8 +159,9 @@ function Transactions({ token }) {
                                                                         <input type="text" name="comment" className="form-control" placeholder="Комментарий" id="exampleInputPassword1"/>
                                                                 </div>
                                                                 <div className="d-flex w-100 justify-content-center">
-                                                                    <button type="submit" className="btn btn-success" >Добавить</button>
+                                                                    <button type="submit" className="btn btn-primary btn-lg w-100" >Добавить</button>
                                                                 </div>
+                                                                <Alert source={AlertAdd} />
                                                         </form>
                                                 </div>
                                         </div>

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import Alert from "./Alert.jsx";
 
 const subtractMonths = (date, months) => {
       const result = new Date(date);
@@ -15,13 +16,14 @@ function Reports({ token }) {
     const [transactionsNumber, setTransactionsNumber] = useState(0);
     const [categoriesNumber, setCategoriesNumber] = useState(0);
 
-    const [startDate, setStartDate] = useState((subtractMonths(new Date(), 6)).toISOString().slice(0, 10));
+    const [startDate, setStartDate] = useState((subtractMonths(new Date(), 1)).toISOString().slice(0, 10));
     const [endDate, setEndDate] = useState(new Date().toISOString().slice(0, 10));
     const [searchCategory, setSearchCategory] = useState(null);
 
     const [income, setIncome] = useState(0);
     const [spent, setSpent] = useState(0);
 
+    const [AlertMain, setAlertMain] = useState({'error':{'show': true, 'text': ''}, 'success': {'show': true, 'text': ''}});
 
 
     const loadData = (start, end, category) =>{
@@ -76,8 +78,8 @@ function Reports({ token }) {
 
   return (
         <div className="container text-end mt-3 mb-3">
-              <div className="row">
-                    <div className="col text-left">
+              <div className="row justify-content-md-center">
+                    <div className="col-lg text-end">
                           <h1>Сводка</h1>
                           <form className=" ">
                                 <select className="form-select form-select-lg mb-3" onChange={e => setSearchCategory(e.target.value)}>
@@ -98,33 +100,18 @@ function Reports({ token }) {
                                         <label htmlFor="InputEnd">Конец</label>
                                 </div>
                           </form>
-                          <div className="row m-3">
-                                <div className="col text-center fs-5">Число транзакций: </div>
-                          </div>
-                          <div className="row m-3">
-                                <div className="col text-center  fs-5">{transactionsNumber}</div>
-                          </div>
-                          <div className="row m-3">
-                                <div className="col text-center fs-5">Доход за период: </div>
-                          </div>
-                          <div className="row m-3">
-                                <div className="col text-center  fs-5">{income.toLocaleString('ru', {style: 'currency', currency: 'RUB'})}</div>
-                          </div>
-                          <div className="row m-3">
-                                <div className="col text-center fs-5">Расход за период: </div>
-                          </div>
-                          <div className="row m-3">
-                                <div className="col text-center  fs-5">{spent.toLocaleString('ru', {style: 'currency', currency: 'RUB'})}</div>
-                          </div>
-                          <div className="row m-3">
-                                <div className="col text-center fs-5">Баланс: </div>
-                          </div>
-                          <div className="row m-3">
-                                <div className="col text-center fs-5">{(income - spent).toLocaleString('ru', {style: 'currency', currency: 'RUB'})}</div>
-                          </div>
-                    </div>
-                    <div className="col">
+                          <Alert source={AlertMain} />
 
+                    </div>
+                    <div className="col-lg ">
+                          <div className="row justify-content-md-center">
+                                <div className="col-lg-6 text-start fs-5">Число транзакций: {transactionsNumber}</div>
+                                <div className="col-lg-6 text-start fs-5">Доход за период: {income.toLocaleString('ru', {style: 'currency', currency: 'RUB'})}</div>
+                                <div className="col-lg-6 text-start fs-5">Расход за период: {spent.toLocaleString('ru', {style: 'currency', currency: 'RUB'})}</div>
+                                <div className="col-lg-6 text-start fs-5">Баланс: {(income - spent).toLocaleString('ru', {style: 'currency', currency: 'RUB'})}</div>
+
+
+                          </div>
                     </div>
               </div>
         </div>

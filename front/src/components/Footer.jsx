@@ -1,16 +1,40 @@
 import React from "react";
+import { NavLink  } from "react-router-dom";
 
 function Footer() {
   return (
-    <div className="footer">
-      <footer className="py-2 bg-dark fixed-bottom">
+    <footer class="footer fixed-bottom">
+    <div className="navigation">
+      <nav className="navbar navbar-expand navbar-dark bg-dark">
         <div className="container">
-          <p className="m-0 text-center text-white">
-            Copyright &copy; nezvanovml, 2022
-          </p>
+
+            <ul className="navbar-nav  w-100 justify-content-around">
+              <li className="nav-item">
+                <NavLink className="nav-link" to="/">
+                  Транзакции
+                </NavLink>
+              </li>
+              <li className="nav-item">
+                <NavLink className="nav-link" to="/categories">
+                  Категории
+                </NavLink>
+              </li>
+              <li className="nav-item">
+                <NavLink className="nav-link" to="/reports">
+                  Отчёты
+                </NavLink>
+              </li>
+              <li className="nav-item">
+                <NavLink className="nav-link" to="/settings">
+                  Настройки
+                </NavLink>
+              </li>
+            </ul>
+
         </div>
-      </footer>
+      </nav>
     </div>
+  </footer>
   );
 }
 

@@ -1,23 +1,6 @@
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
-    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
-    monospace;
-}
-a {
-  text-decoration: none;
-  color: black;
-}
-a:hover {
-  text-decoration: none;
-  color: rgba(0, 0, 0, 0.349);
+html, body {
+    margin: 0;
+    height: 100%;
 }
 
 .form-signin {
@@ -39,4 +22,8 @@ a:hover {
   margin-bottom: 10px;
   border-top-left-radius: 0;
   border-top-right-radius: 0;
+}
+
+#root {
+  height: 100vh;
 }

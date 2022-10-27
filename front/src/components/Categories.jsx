@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from "react";
-
+import Alert from "./Alert.jsx";
 
 
 function Categories({ token }) {
     const [categories, setCategories] = useState([]);
     const [categoriesNumber, setCategoriesNumber] = useState(0);
+
+    const [AlertMain, setAlertMain] = useState({'error':{'show': true, 'text': ''}, 'success': {'show': true, 'text': ''}});
+    const [AlertUpdate, setAlertUpdate] = useState({'error':{'show': true, 'text': ''}, 'success': {'show': true, 'text': ''}});
+    const [AlertAdd, setAlertAdd] = useState({'error':{'show': true, 'text': ''}, 'success': {'show': true, 'text': ''}});
 
     const loadData = () =>{
         fetch('/api/categories',{headers: {'Authorization': token}})
@@ -65,16 +69,17 @@ function Categories({ token }) {
 
   return (
         <div className="container text-end mt-3 mb-3">
-              <div className="row">
-                    <div className="col text-left">
+              <div className="row justify-content-md-center">
+                    <div className="col-lg text-end">
                           <h1>Категории</h1>
 
                           <div className="row m-3">
                                 <div className="col text-right fs-5">Найдено категорий: </div>
                                 <div className="col text-left col-2 fs-5">{categoriesNumber}</div>
                           </div>
+                          <Alert source={AlertMain} />
                     </div>
-                    <div className="col">
+                    <div className="col-lg">
                           <ul className="list-group m-2 justify-content-between mb-5">
                                 <li className={'list-group-item list-group-item-action text-dark bg-opacity-50 '}>
                                         <div data-bs-toggle="collapse" data-bs-target={"#collapseNew"} >
@@ -93,14 +98,15 @@ function Categories({ token }) {
                                                                         <input type="text" name="description" className="form-control" placeholder="Описание"/>
                                                                 </div>
                                                                 <div className="d-flex w-100 justify-content-around mb-3">
-                                                                        <input type="radio" className="btn-check" value="income" name="type" id="success-outlined" autoComplete="off"  />
-                                                                        <label className="btn btn-outline-success" htmlFor="success-outlined">Доход</label>
+                                                                        <input type="radio" className="btn-check " value="income" name="type" id="success-outlined" autoComplete="off"  />
+                                                                        <label className="btn btn-outline-success " htmlFor="success-outlined">Доход</label>
                                                                         <input type="radio" className="btn-check" value="spent" name="type" id="danger-outlined" autoComplete="off" defaultChecked={true} />
-                                                                        <label className="btn btn-outline-danger" htmlFor="danger-outlined">Расход</label>
+                                                                        <label className="btn btn-outline-danger " htmlFor="danger-outlined">Расход</label>
                                                                 </div>
                                                                 <div className="d-flex w-100 justify-content-center">
-                                                                    <button type="submit" className="btn btn-primary" >Добавить</button>
+                                                                    <button type="submit" className="btn btn-primary btn-lg w-100" >Добавить</button>
                                                                 </div>
+                                                                <Alert source={AlertAdd} />
                                                         </form>
                                                 </div>
                                         </div>
