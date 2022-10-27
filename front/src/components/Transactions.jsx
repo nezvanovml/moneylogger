@@ -152,7 +152,7 @@ function Transactions({ token }) {
                                                                         <label htmlFor="InputEnd">Дата</label>
                                                                 </div>
                                                                 <div className="input-group mb-3">
-                                                                        <input type="number" name="sum" className="form-control" placeholder="Сумма" defaultValue="0" aria-describedby="basic-addon2" />
+                                                                        <input type="number" step="0.01" name="sum" className="form-control" placeholder="Сумма" defaultValue="0" aria-describedby="basic-addon2" />
                                                                         <span className="input-group-text" id="basic-addon2">₽</span>
                                                                 </div>
                                                                 <div className="mb-3">
@@ -197,7 +197,7 @@ function Transactions({ token }) {
                                                                         <label htmlFor="InputEnd">Дата</label>
                                                                 </div>
                                                                 <div className="input-group mb-3">
-                                                                        <input type="number" name="sum" className="form-control" placeholder="Сумма" defaultValue={transaction.sum > 0 ? transaction.sum : transaction.sum * (-1)} aria-describedby="basic-addon2" />
+                                                                        <input type="number" step="0.01" name="sum" className="form-control" placeholder="Сумма" defaultValue={transaction.sum > 0 ? transaction.sum : transaction.sum * (-1)} aria-describedby="basic-addon2" />
                                                                         <span className="input-group-text" id="basic-addon2">₽</span>
                                                                 </div>
                                                                 <div className="mb-3">
