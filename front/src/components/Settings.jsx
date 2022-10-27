@@ -76,7 +76,7 @@ function Settings({ token }) {
         let data = {'old_password': current_password, 'new_password': new_password}
         console.log(data)
             let result = await fetch('/api/change_password', { method: 'POST', headers: {'Authorization': token, 'Content-Type': 'application/json'}, body: JSON.stringify(data)}).catch(console.error)
-            console.log(result.json())
+            console.log(await result.json())
             if (result.status == 201) {
                 setAlertPassword({'error':{'show': false, 'text': '.'}, 'success': {'show': true, 'text': 'Пароль изменён.'}});
                 loadData();
