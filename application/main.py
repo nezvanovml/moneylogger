@@ -659,7 +659,6 @@ def load_from_csv():
                         if sum > 0:
                             category = Categories(user_id=user_id, name=row['category'], income=True)
                         else:
-                            sum = sum * (-1)
                             category = Categories(user_id=user_id, name=row['category'], income=False)
                         try:
                             db.session.add(category)
@@ -675,7 +674,8 @@ def load_from_csv():
                         date = datetime.datetime.utcnow()
 
 
-
+                    if sum < 0:
+                        sum = sum * (-1)
                     transaction = Transactions(user_id=user_id,
                                                category_id=category.id,
                                                date_of_spent=date,
