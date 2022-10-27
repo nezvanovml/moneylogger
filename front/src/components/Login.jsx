@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import PropTypes from 'prop-types';
+import Alert from "./Alert.jsx";
 
 async function loginUser(credentials) {
 console.log(JSON.stringify(credentials))
@@ -17,22 +18,22 @@ export default function Login({ setToken }) {
   const [email, setEmail] = useState();
   const [password, setPassword] = useState();
   const [hideErrorbox, setHideErrorbox] = useState(true);
+  const [AlertMain, setAlertMain] = useState({'error':{'show': false, 'text': ''}, 'success': {'show': false, 'text': ''}});
 
   const handleSubmit = async e => {
     e.preventDefault();
-    const token = await loginUser({
-      email,
-      password
-    });
-    console.log(token)
-    if(token.status == 'SUCCESS'){
-        console.log('Token: ' + token.token)
-        //localStorage.setItem('token', token.token);
-        setHideErrorbox(true)
-        setToken(token.token);
+    let credentials = {'email': email, 'password': password}
+    console.log(JSON.stringify(credentials))
+
+    let result = await fetch('https://money.nezvanov.ru/api/login', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(credentials)})
+    let json_data = await result.json()
+    if(json_data.status == 'SUCCESS'){
+        console.log('Token: ' + json_data.token)
+        setAlertMain({'error':{'show': false, 'text': ''}, 'success': {'show': true, 'text': 'Данные для входа верны, происходит авторизация.'}});
+        setToken(json_data.token);
 
     } else {
-        setHideErrorbox(false)
+        setAlertMain({'error':{'show': true, 'text': 'Указаны неверные данные для входа.'}, 'success': {'show': false, 'text': ''}});
         console.log('error logging in')
     }
   }
@@ -52,7 +53,7 @@ export default function Login({ setToken }) {
             <label htmlFor="InputPassword">Пароль</label>
           </div>
           <button type="submit" className="btn btn-primary">Войти</button>
-          <div className={'alert alert-danger mt-2 ' + (hideErrorbox ? "d-none" : "")}  role="alert">Указаны неверные данные для входа</div>
+          <Alert source={AlertMain} />
         </form>
 
       </main>
