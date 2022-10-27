@@ -34,10 +34,14 @@ function Categories({ token }) {
         console.log(id, name, description, type)
 
         let result = await fetch('/api/categories?name='+name+'&description='+description+'&category='+id+'&income='+type, { method: 'POST', headers: {'Authorization': token}})
-        if (result.status == 201) loadData();
-
+        let json_data = await result.json()
+        if (json_data.status == 'SUCCESS') {
+            setAlertUpdate({'error':{'show': false, 'text': ''}, 'success': {'show': true, 'text': 'Данные сохранены.'}});
+            loadData();
+        } else {
+            setAlertUpdate({'error':{'show': true, 'text': 'Произошла ошибка при обновлении.'}, 'success': {'show': false, 'text': ''}});
+        }
     }
-
 
     const addCategory = async e => {
         e.preventDefault();
@@ -51,16 +55,26 @@ function Categories({ token }) {
         else type = 'False'
 
         let result = await fetch('/api/categories?name='+name+'&income='+type+'&description='+description, { method: 'PUT', headers: {'Authorization': token}})
-        if (result.status == 201) {
+        let json_data = await result.json()
+        if (json_data.status == 'SUCCESS') {
+            setAlertAdd({'error':{'show': false, 'text': ''}, 'success': {'show': true, 'text': 'Категория добавлена.'}});
             loadData();
             e.target.reset()
+        } else {
+            setAlertAdd({'error':{'show': true, 'text': 'Произошла ошибка при добавлении.'}, 'success': {'show': false, 'text': ''}});
         }
     }
 
     const deleteCategory = async (id) => {
         console.log('Delete: '+id)
         let result = await fetch('/api/categories?category='+id, { method: 'DELETE', headers: {'Authorization': token}})
-        if (result.status == 200) loadData();
+        let json_data = await result.json()
+        if (json_data.status == 'SUCCESS') {
+            setAlertUpdate({'error':{'show': false, 'text': ''}, 'success': {'show': true, 'text': 'Категория удалена.'}});
+            loadData();
+        } else {
+            setAlertUpdate({'error':{'show': true, 'text': 'Произошла ошибка при удалении.'}, 'success': {'show': false, 'text': ''}});
+        }
     }
 
     useEffect(() => {
