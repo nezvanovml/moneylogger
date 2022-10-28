@@ -3,7 +3,7 @@ import { NavLink  } from "react-router-dom";
 
 function Footer() {
   return (
-    <footer class="footer fixed-bottom">
+    <footer className="footer fixed-bottom">
     <div className="navigation">
       <nav className="navbar navbar-expand navbar-dark bg-dark">
         <div className="container">

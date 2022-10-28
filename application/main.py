@@ -715,6 +715,38 @@ def export_to_csv():
     return Response(json.dumps({'status': 'ERROR', 'description': 'Something went wrong.'}),
                     mimetype="application/json", status=500)
 
+@app.route('/api/categories/join', methods=['GET'])
+@is_authorized()
+def categories_join():
+    user_id = get_current_user()
+
+    category_from = request.args.get('category_from', None)
+    try:
+        category_from = int(category_from)
+    except ValueError:
+        return Response(json.dumps({'status': 'ERROR', 'description': f"category_from is not a int."}),
+                        mimetype="application/json",
+                        status=400)
+    except TypeError:
+        return Response(json.dumps({'status': 'ERROR', 'description': f"category_from not provided."}),
+                        mimetype="application/json",
+                        status=400)
+
+
+
+    transactions = Transactions.query.filter(Transactions.user_id == user_id).join(Categories, Transactions.category_id==Categories.id).add_columns(Categories.name, Transactions.sum, Transactions.date_of_spent, Transactions.comment).order_by(Transactions.date_of_spent.desc(), Transactions.id.desc()).all()
+    with io.StringIO() as csvfile:
+        fieldnames = ['date', 'category', 'amount', 'description']
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames, delimiter=';')
+        writer.writeheader()
+        for transaction in transactions:
+            writer.writerow({'date': transaction.date_of_spent.strftime("%Y-%m-%d"), 'category': transaction.name, 'amount': transaction.sum, 'description': transaction.comment})
+        csvfile.seek(0)
+        return Response(csvfile.read(), mimetype="text/csv", status=200)
+
+    return Response(json.dumps({'status': 'ERROR', 'description': 'Something went wrong.'}),
+                    mimetype="application/json", status=500)
+
 
 @app.route('/api/login', methods=['POST'])
 def login():

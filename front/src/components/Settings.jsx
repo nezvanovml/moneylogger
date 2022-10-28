@@ -1,12 +1,30 @@
 import React, { useState, useEffect } from "react";
+import axios from 'axios';
+import Alert from "./Alert.jsx";
 
-function Alert( props ) {
-    return(
-    <>
-        <div className={'alert alert-danger mt-2 text-start ' + (props.source.error.show ? "" : "d-none")}  role="alert">{props.source.error.text}</div>
-        <div className={'alert alert-success mt-2 text-start ' + (props.source.success.show ? "" : "d-none")}  role="alert">{props.source.success.text}</div>
-    </>
-    );
+function Fileupload( ) {
+    const [AlertUpload, setAlertUpload] = useState({'error':{'show': true, 'text': ''}, 'success': {'show': false, 'text': ''}});
+    const onFileUpload = async e => {
+      e.preventDefault();
+
+      const formData = new FormData();
+      formData.append(
+        "file",
+        e.target.files[0],
+        e.target.files[0].name
+      );
+      console.log(e.target.files[0]);
+      if(e.target.files[0] != null) axios.post("api/import/csv", formData);
+    };
+
+      return (
+        <div className="">
+                <label htmlFor="formFile" className="form-label">Выберите CSV-файл для импорта</label>
+                <input className="form-control" type="file" id="formFile" onChange={onFileUpload} />
+                <Alert source={AlertUpload} />
+        </div>
+      );
+
 }
 
 function Settings({ token }) {
@@ -14,6 +32,7 @@ function Settings({ token }) {
     const [AlertPersonal, setAlertPersonal] = useState({'error':{'show': false, 'text': ''}, 'success': {'show': false, 'text': ''}});
     const [AlertPassword, setAlertPassword] = useState({'error':{'show': false, 'text': ''}, 'success': {'show': false, 'text': ''}});
     const [AlertMain, setAlertMain] = useState({'error':{'show': false, 'text': ''}, 'success': {'show': false, 'text': ''}});
+    const [AlertTruncate, setAlertTruncate] = useState({'error':{'show': false, 'text': ''}, 'success': {'show': false, 'text': ''}});
 
     const exportData = () => {
 		fetch('/api/export/csv', { method: 'GET', headers: {'Authorization': token}})
@@ -66,12 +85,10 @@ function Settings({ token }) {
 
     const updatePassword = async e => {
         e.preventDefault();
+        setAlertPassword({'error':{'show': false, 'text': ''}, 'success': {'show': false, 'text': ''}});
         let current_password = e.target.elements.password_current.value
         let new_password = e.target.elements.password_new_1.value
         let new_password_repeat = e.target.elements.password_new_2.value
-        const target = e.target;
-        console.log(current_password, new_password, new_password_repeat)
-
         if(current_password.length > 0 && new_password.length > 0 && new_password === new_password_repeat){
         let data = {'old_password': current_password, 'new_password': new_password}
         console.log(data)
@@ -86,6 +103,33 @@ function Settings({ token }) {
             }
         } else {
             setAlertPassword({'error':{'show': true, 'text': 'Не указан текущий пароль или не совпадают новые пароли.'}, 'success': {'show': false, 'text': ''}});
+        }
+
+
+
+    }
+
+    const truncateData = async e => {
+        e.preventDefault();
+        setAlertTruncate({'error':{'show': false, 'text': ''}, 'success': {'show': false, 'text': ''}});
+        let current_password = e.target.elements.password_truncate.value
+        if(current_password.length > 0){
+        let data = {'password': current_password}
+        console.log(data)
+            let result = await fetch('/api/clear_all', { method: 'POST', headers: {'Authorization': token, 'Content-Type': 'application/json'}, body: JSON.stringify(data)}).catch(console.error)
+            console.log(await result.json())
+            let json_data = await result.json()
+            if(json_data){
+                if (json_data.status == 'SUCCESS') {
+                    setAlertTruncate({'error':{'show': false, 'text': '.'}, 'success': {'show': true, 'text': 'Данные удалены.'}});
+                    loadData();
+                } else {
+                     setAlertTruncate({'error':{'show': true, 'text': 'Не удалось удалить данные. Убедитесь, что указан верный пароль.'}, 'success': {'show': false, 'text': ''}});
+                     console.log(result)
+                }
+            } else setAlertTruncate({'error':{'show': true, 'text': 'Ошибка при обращении к серверу.'}, 'success': {'show': false, 'text': ''}});
+        } else {
+            setAlertTruncate({'error':{'show': true, 'text': 'Не указан текущий пароль.'}, 'success': {'show': false, 'text': ''}});
         }
 
 
@@ -112,19 +156,38 @@ function Settings({ token }) {
   return (
 <div className="container text-end mt-3 mb-3">
               <Alert source={AlertMain} />
-              <div className="row">
-                    <div className="col text-left">
+              <div className="row justify-content-md-center">
+                    <div className="col-lg text-end">
                           <h1>Настройки</h1>
 
                           <div className="row m-3">
                                 <div className="col text-right fs-5">Для изменения персональных данных внесите правки в поля, изменения сохранятся автоматически. </div>
 
                           </div>
-
+                          <div className="row m-3">
+                                <Fileupload />
+                          </div>
                           <div className="row ">
                                 <div className="col d-flex w-100 justify-content-around">
-                                        <button type="button" className="btn btn-primary m-2" onClick={exportData}>Экспорт в CSV</button>
+                                        <button type="button" className="btn btn-primary m-2 w-100" onClick={exportData}>Экспорт в CSV</button>
                                 </div>
+                          </div>
+                          <div className="row ">
+                          <form onSubmit={truncateData}>
+                                <div className="col d-flex w-100 justify-content-around align-items-center">
+                                        <div className="form-floating ">
+                                                        <input type="password" name="password_truncate" id="passwordtruncate" className="form-control"   />
+                                                        <label htmlFor="passwordtruncate" >Введите текущий пароль</label>
+                                        </div>
+                                        <div className="form-floating pt-3">
+                                                        <button type="submit" className="btn btn-danger mb-3 btn-lg">Удалить все данные</button>
+
+                                        </div>
+
+
+                                </div>
+                                <Alert source={AlertTruncate} />
+                                </form>
                           </div>
 
                           <div className="row ">
@@ -135,9 +198,9 @@ function Settings({ token }) {
                           </div>
                     </div>
 
-                    <div className="col">
+                    <div className="col-lg">
 
-                                                <div className=" mt-2">
+                                                <div className="mt-2">
                                                         <h1>Личные данные</h1>
                                                         <form>
                                                                 <div className="form-floating mb-3">
