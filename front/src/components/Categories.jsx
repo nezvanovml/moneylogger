@@ -160,7 +160,7 @@ function Categories({ token }) {
                                                                         <option value="spent" key="spent" selected={!category.income ? "selected" : false} >Расход</option>
                                                                 </select>
                                                                 <select name="category_join" className="form-select form-select-lg mb-3">
-                                                                        <option selected>Все категории</option>
+                                                                        <option value="" selected>Нет</option>
                                                                         {
                                                                         categories.map((category) => {
                                                                                     return (
