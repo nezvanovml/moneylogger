@@ -10,5 +10,5 @@ pyyaml==6.0
 requests==2.27.1
 Flask-Mail==0.9.1
 redis==3.5.3
-celery==5.1.2
+celery==5.2.2
 Flask-Cors==3.0.10
