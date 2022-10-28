@@ -3,7 +3,7 @@ import axios from 'axios';
 import Alert from "./Alert.jsx";
 
 function Fileupload( { token } ) {
-    const [AlertUpload, setAlertUpload] = useState({'error':{'show': true, 'text': ''}, 'success': {'show': false, 'text': ''}});
+    const [AlertUpload, setAlertUpload] = useState({'error':{'show': false, 'text': ''}, 'success': {'show': false, 'text': ''}});
     const onFileUpload = async e => {
       e.preventDefault();
         console.log(token)
@@ -14,7 +14,18 @@ function Fileupload( { token } ) {
         e.target.files[0].name
       );
       console.log(e.target.files[0]);
-      if(e.target.files[0] != null) axios.post("api/import/csv", formData, {headers: {'Authorization': token}});
+      if(e.target.files[0] != null) {
+            let result = await axios.post("api/import/csv", formData, {headers: {'Authorization': token}});
+            let json_data = await result.json()
+
+            if (json_data.status == 'SUCCESS') {
+                    setAlertUpload({'error':{'show': false, 'text': '.'}, 'success': {'show': true, 'text': 'Данные удалены.'}});
+            } else {
+                     setAlertUpload({'error':{'show': true, 'text': 'Не удалось удалить данные. Убедитесь, что указан верный пароль.'}, 'success': {'show': false, 'text': ''}});
+                     console.log(result)
+            }
+
+      }
     };
 
       return (
