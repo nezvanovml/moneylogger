@@ -16,9 +16,8 @@ function Fileupload( { token } ) {
       console.log(e.target.files[0]);
       if(e.target.files[0] != null) {
             let result = await axios.post("api/import/csv", formData, {headers: {'Authorization': token}});
-            let json_data = await result.json()
 
-            if (json_data.status == 'SUCCESS') {
+            if (result.status == 'SUCCESS') {
                     setAlertUpload({'error':{'show': false, 'text': '.'}, 'success': {'show': true, 'text': 'Данные удалены.'}});
             } else {
                      setAlertUpload({'error':{'show': true, 'text': 'Не удалось удалить данные. Убедитесь, что указан верный пароль.'}, 'success': {'show': false, 'text': ''}});
