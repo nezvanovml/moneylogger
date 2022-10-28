@@ -66,7 +66,7 @@ function Reports({ token }) {
                 setCategoriesIncome(dictIncome);
                 setCategoriesNumber(data.count)
 
-             }).then(count())
+             })
              .catch((err) => {
                 console.log(err.message);
              });
@@ -77,8 +77,8 @@ function Reports({ token }) {
 
 
     useEffect(() => {
-        loadData(startDate, endDate, searchCategory);
-    }, [startDate, endDate, searchCategory]);
+         loadData(startDate, endDate, searchCategory);
+    }, [startDate, endDate, searchCategory, income, spent]);
 
   return (
         <div className="container text-end mt-3 mb-3">
