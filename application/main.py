@@ -656,10 +656,7 @@ def load_from_csv():
                     category = Categories.query.filter(Categories.name == row['category'],
                                                        Categories.user_id == user_id).first()
                     if not category:
-                        if sum > 0:
-                            category = Categories(user_id=user_id, name=row['category'], income=True)
-                        else:
-                            category = Categories(user_id=user_id, name=row['category'], income=False)
+                        category = Categories(user_id=user_id, name=row['category'], income=False)
                         try:
                             db.session.add(category)
                             db.session.commit()
@@ -709,7 +706,7 @@ def export_to_csv():
         writer.writeheader()
         for transaction in transactions:
             sum = transaction.sum if transaction.sum > 0.0 else (transaction.sum * (-1))
-            writer.writerow({'date': transaction.date_of_spent.strftime("%Y-%m-%d"), 'category': transaction.name, 'amount': sum, 'description': transaction.comment})
+            writer.writerow({'date': transaction.date_of_spent.strftime("%d.%m.%Y"), 'category': transaction.name, 'amount': sum, 'description': transaction.comment})
         csvfile.seek(0)
         return Response(csvfile.read(), mimetype="text/csv", status=200)
 
