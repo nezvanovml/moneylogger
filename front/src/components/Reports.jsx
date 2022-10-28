@@ -9,12 +9,8 @@ const subtractMonths = (date, months) => {
 
 
 function Reports({ token }) {
-    const [transactions, setTransactions] = useState([]);
-    const [categories, setCategories] = useState([]);
-    const [categoriesDict, setCategoriesDict] = useState({});
-    const [categoriesIncome, setCategoriesIncome] = useState({});
     const [transactionsNumber, setTransactionsNumber] = useState(0);
-    const [categoriesNumber, setCategoriesNumber] = useState(0);
+    const [categoriesDict, setCategoriesDict] = useState({});
 
     const [startDate, setStartDate] = useState((subtractMonths(new Date(), 1)).toISOString().slice(0, 10));
     const [endDate, setEndDate] = useState(new Date().toISOString().slice(0, 10));
@@ -25,18 +21,6 @@ function Reports({ token }) {
 
     const [AlertMain, setAlertMain] = useState({'error':{'show': false, 'text': ''}, 'success': {'show': false, 'text': ''}});
 
-    const count = () =>{
-        let temp_spent = 0;
-        let temp_income = 0;
-
-        transactions.map((transaction) => {
-                    if(categoriesIncome[transaction.category]) temp_income += transaction.sum;
-                    else temp_spent += transaction.sum;
-                });
-        console.log(temp_income, temp_spent)
-        setSpent(temp_spent)
-        setIncome(temp_income)
-    }
 
     const loadData = async () =>{
 
@@ -47,6 +31,11 @@ function Reports({ token }) {
                 console.log(err.message);
              });
         console.log(categories)
+        var dictName = {};
+        categories.categories.map((category) => {
+                    dictName[category.id] = category.name
+        });
+        setCategoriesDict(dictName);
 
         let transactions = await fetch('/api/transactions?start_date='+startDate+'&end_date='+endDate+'&category='+searchCategory, {headers: {'Authorization': token}})
              .then((response) => response.json())
@@ -54,6 +43,18 @@ function Reports({ token }) {
                 console.log(err.message);
              });
         console.log(transactions)
+        setTransactionsNumber(transactions.count)
+
+        let temp_spent = 0;
+        let temp_income = 0;
+
+        transactions.transactions.map((transaction) => {
+                    if(categories.categories.find(o => o.id == transaction.category).income) temp_income += transaction.sum;
+                    else temp_spent += transaction.sum;
+                });
+        console.log(temp_income, temp_spent)
+        setSpent(temp_spent)
+        setIncome(temp_income)
 
     };
 
