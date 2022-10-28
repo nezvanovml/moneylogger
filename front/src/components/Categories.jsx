@@ -161,12 +161,14 @@ function Categories({ token }) {
                                                                         <option value="spent" key="spent" selected={!category.income ? "selected" : false} >Расход</option>
                                                                 </select>
                                                                 <select name="category_join" className="form-select form-select-lg mb-3">
-                                                                        <option value="" selected>Нет</option>
+                                                                        <option value="" selected>Объединить с ...</option>
                                                                         {
-                                                                        categories.map((category) => {
-                                                                                    return (
-                                                                                            <option value={category.id} key={category.id}>{category.name}</option>
-                                                                                    );
+                                                                        categories.map((current) => {
+                                                                                    if(category.id != current.id){
+                                                                                        return (
+                                                                                                <option value={current.id} key={current.id}>{current.name}</option>
+                                                                                        );
+                                                                                    }
                                                                         })
                                                                         }
                                                                         </select>
