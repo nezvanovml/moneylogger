@@ -14,7 +14,7 @@ function Fileupload( token ) {
         e.target.files[0].name
       );
       console.log(e.target.files[0]);
-      if(e.target.files[0] != null) axios.post("api/import/csv", formData);
+      if(e.target.files[0] != null) axios.post("api/import/csv", formData, {headers: {'Authorization': token}});
     };
 
       return (
