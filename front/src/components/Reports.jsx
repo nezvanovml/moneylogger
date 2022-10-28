@@ -71,14 +71,15 @@ function Reports({ token }) {
                 console.log(err.message);
              });
 
-        count()
+
 
     };
 
 
     useEffect(() => {
          loadData(startDate, endDate, searchCategory);
-    }, [startDate, endDate, searchCategory, income, spent]);
+         count();
+    }, [startDate, endDate, searchCategory]);
 
   return (
         <div className="container text-end mt-3 mb-3">
