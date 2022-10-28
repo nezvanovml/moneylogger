@@ -59,7 +59,7 @@ function Transactions({ token }) {
              });
 
         var dict = autoFill;
-        transactions.transactions.map((transaction) => {
+        transactions.map((transaction) => {
                     if(dict.indexOf(transaction.comment) === -1 ) dict.push(transaction.comment)
         });
         setAutoFill(dict)
