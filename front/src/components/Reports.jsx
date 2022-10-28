@@ -34,7 +34,7 @@ function Reports({ token }) {
                     if(categoriesIncome[transaction.category]) temp_income += transaction.sum;
                     else temp_spent += transaction.sum;
                 });
-
+        console.log(temp_income, temp_spent)
         setSpent(temp_spent)
         setIncome(temp_income)
     }
@@ -78,7 +78,7 @@ function Reports({ token }) {
 
     useEffect(() => {
         loadData(startDate, endDate, searchCategory);
-    }, [startDate, endDate, searchCategory, income, spent]);
+    }, [startDate, endDate, searchCategory]);
 
   return (
         <div className="container text-end mt-3 mb-3">
