@@ -41,7 +41,6 @@ function Transactions({ token }) {
                     if(dict.indexOf(transaction.comment) === -1 ) dict.push(transaction.comment)
                 });
                 setAutoFill(dict)
-                console.log(autoFill)
              })
              .catch((err) => {
                 console.log(err.message);
@@ -179,7 +178,17 @@ function Transactions({ token }) {
                                                                         <span className="input-group-text" id="basic-addon2">₽</span>
                                                                 </div>
                                                                 <div className="mb-3">
-                                                                        <input type="text" name="comment" className="form-control" placeholder="Комментарий" id="exampleInputPassword1"/>
+                                                                        <input className="form-control" name="comment"  list="datalistOptions" id="DataList" placeholder="Комментарий" />
+                                                                        <datalist id="datalistOptions">
+                                                                          {autoFill.forEach(item => {
+                                                                            return (
+                                                                                <option value={item} />
+                                                                            );
+                                                                            })}
+
+                                                                          { autoFill.forEach(function(item, index){ return (<option value={item} />)}) }
+                                                                        </datalist>
+{/*                                                                         <input type="text" name="comment" className="form-control" placeholder="Комментарий" id="exampleInputPassword1"/> */}
                                                                 </div>
                                                                 <div className="d-flex w-100 justify-content-center">
                                                                     <button type="submit" className="btn btn-primary btn-lg w-100" >Добавить</button>
@@ -224,7 +233,18 @@ function Transactions({ token }) {
                                                                         <span className="input-group-text" id="basic-addon2">₽</span>
                                                                 </div>
                                                                 <div className="mb-3">
-                                                                        <input type="text" name="comment" className="form-control" placeholder="Комментарий" id="exampleInputPassword1" defaultValue={transaction.comment}/>
+                                                                        <input className="form-control" name="comment"  list="datalistOptions" id="DataList" placeholder="Комментарий"  defaultValue={transaction.comment} />
+                                                                        <datalist id="datalistOptions">
+                                                                          <option value="San Francisco" />
+                                                                          {autoFill.forEach(item => {
+                                                                            return (
+                                                                                <option value={item} />
+                                                                            );
+                                                                            })}
+
+                                                                          { autoFill.forEach(function(item, index){ return (<option value={item} />)}) }
+                                                                        </datalist>
+{/*                                                                         <input type="text" name="comment" className="form-control" placeholder="Комментарий" id="exampleInputPassword1" defaultValue={transaction.comment}/> */}
                                                                 </div>
                                                                 <div className="d-flex w-100 justify-content-between">
                                                                         <button type="button" className="btn btn-danger" onClick={e => deleteTransaction(transaction.id)}>Удалить</button>
