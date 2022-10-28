@@ -71,7 +71,7 @@ function Reports({ token }) {
                 console.log(err.message);
              });
 
-
+        count()
 
     };
 
