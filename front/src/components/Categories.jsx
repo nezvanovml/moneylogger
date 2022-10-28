@@ -53,6 +53,7 @@ function Categories({ token }) {
         } else {
             setAlertUpdate({'error':{'show': true, 'text': 'Произошла ошибка при обновлении.'}, 'success': {'show': false, 'text': ''}});
         }
+        if(join) joinCategory(id, join);
     }
 
     const addCategory = async e => {
