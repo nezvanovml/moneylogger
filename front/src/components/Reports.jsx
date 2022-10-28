@@ -40,16 +40,7 @@ function Reports({ token }) {
     }
 
     const loadData = (start, end, category) =>{
-        fetch('/api/transactions?start_date='+start+'&end_date='+end+'&category='+category, {headers: {'Authorization': token}})
-             .then((response) => response.json())
-             .then((data) => {
-                console.log(data);
-                setTransactions(data.transactions);
-                setTransactionsNumber(data.count)
-             })
-             .catch((err) => {
-                console.log(err.message);
-             });
+
 
         fetch('/api/categories',{headers: {'Authorization': token}})
              .then((response) => response.json())
@@ -71,6 +62,16 @@ function Reports({ token }) {
                 console.log(err.message);
              });
 
+        fetch('/api/transactions?start_date='+start+'&end_date='+end+'&category='+category, {headers: {'Authorization': token}})
+             .then((response) => response.json())
+             .then((data) => {
+                console.log(data);
+                setTransactions(data.transactions);
+                setTransactionsNumber(data.count)
+             }).then(count())
+             .catch((err) => {
+                console.log(err.message);
+             });
 
 
     };
@@ -78,7 +79,7 @@ function Reports({ token }) {
 
     useEffect(() => {
          loadData(startDate, endDate, searchCategory);
-         count();
+
     }, [startDate, endDate, searchCategory]);
 
   return (
