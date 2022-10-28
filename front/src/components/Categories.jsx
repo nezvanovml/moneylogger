@@ -23,15 +23,27 @@ function Categories({ token }) {
              });
     };
 
+    const joinCategory = async (from, to) => {
+        let result = await fetch('/api/categories/join?category_from='+from+'&category_to='+to, { method: 'POST', headers: {'Authorization': token}})
+        let json_data = await result.json()
+        if (json_data.status == 'SUCCESS') {
+            setAlertUpdate({'error':{'show': false, 'text': ''}, 'success': {'show': true, 'text': 'Слияние категорий прошло успешно.'}});
+            loadData();
+        } else {
+            setAlertUpdate({'error':{'show': true, 'text': 'Произошла ошибка при слиянии.'}, 'success': {'show': false, 'text': ''}});
+        }
+    }
+
     const updateCategory = async e => {
         e.preventDefault();
         let id = e.target.elements.id.value;
         let name = e.target.elements.name.value;
         let type = e.target.elements.type.value;
+        let join = e.target.elements.category_join.value;
         let description = e.target.elements.description.value;
         if (type == 'income') type = 'True'
         else type = 'False'
-        console.log(id, name, description, type)
+        console.log(id, name, description, type, join)
 
         let result = await fetch('/api/categories?name='+name+'&description='+description+'&category='+id+'&income='+type, { method: 'POST', headers: {'Authorization': token}})
         let json_data = await result.json()
@@ -147,7 +159,16 @@ function Categories({ token }) {
                                                                         <option value="income" key="income" selected={category.income ? "selected" : false} >Доход</option>
                                                                         <option value="spent" key="spent" selected={!category.income ? "selected" : false} >Расход</option>
                                                                 </select>
-
+                                                                <select name="category_join" className="form-select form-select-lg mb-3">
+                                                                        <option selected>Все категории</option>
+                                                                        {
+                                                                        categories.map((category) => {
+                                                                                    return (
+                                                                                            <option value={category.id} key={category.id}>{category.name}</option>
+                                                                                    );
+                                                                        })
+                                                                        }
+                                                                        </select>
                                                                 <div className="d-flex w-100 justify-content-between">
                                                                         <button type="button" className="btn btn-danger" onClick={e => deleteCategory(category.id)}>Удалить</button>
                                                                         <button type="submit" className="btn btn-success" >Сохранить</button>
