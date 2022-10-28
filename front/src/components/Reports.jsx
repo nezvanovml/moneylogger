@@ -65,8 +65,8 @@ function Reports({ token }) {
                 setCategoriesDict(dictName);
                 setCategoriesIncome(dictIncome);
                 setCategoriesNumber(data.count)
-                count()
-             })
+
+             }).then(count())
              .catch((err) => {
                 console.log(err.message);
              });
