@@ -38,7 +38,7 @@ function Reports({ token }) {
         setIncome(temp_income)
     }
 
-    const loadData = async (start, end, category) =>{
+    const loadData =  (start, end, category) =>{
 
 
         fetch('/api/categories',{headers: {'Authorization': token}})
@@ -67,7 +67,7 @@ function Reports({ token }) {
                 console.log(data);
                 setTransactions(data.transactions);
                 setTransactionsNumber(data.count)
-             })
+             }).then(() => count())
              .catch((err) => {
                 console.log(err.message);
              });
@@ -76,9 +76,8 @@ function Reports({ token }) {
     };
 
 
-    useEffect(async () => {
-         let result = await loadData(startDate, endDate, searchCategory);
-         count();
+    useEffect( () => {
+         loadData(startDate, endDate, searchCategory);
 
     }, [startDate, endDate, searchCategory]);
 
