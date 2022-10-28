@@ -17,10 +17,10 @@ function Fileupload( { token } ) {
       if(e.target.files[0] != null) {
             let result = await axios.post("api/import/csv", formData, {headers: {'Authorization': token}});
 
-            if (result.status == 'SUCCESS') {
-                    setAlertUpload({'error':{'show': false, 'text': '.'}, 'success': {'show': true, 'text': 'Данные удалены.'}});
+            if (result.data.status == 'SUCCESS') {
+                    setAlertUpload({'error':{'show': false, 'text': '.'}, 'success': {'show': true, 'text': 'Добавлено транзакций: '+result.data.transactions}});
             } else {
-                     setAlertUpload({'error':{'show': true, 'text': 'Не удалось удалить данные. Убедитесь, что указан верный пароль.'}, 'success': {'show': false, 'text': ''}});
+                     setAlertUpload({'error':{'show': true, 'text': 'Не удалось обработать файл. '+result.data.description}, 'success': {'show': false, 'text': ''}});
                      console.log(result)
             }
 
