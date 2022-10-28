@@ -182,6 +182,10 @@ function Settings({ token }) {
                                 <div className="col d-flex w-100 justify-content-around">
                                         <button type="button" className="btn btn-primary m-2 w-100" onClick={exportData}>Экспорт в CSV</button>
                                 </div>
+                                <div className="col d-flex w-100 justify-content-around">
+                                        <button type="button" className="btn btn-danger m-2 " onClick={fullLogout}>Выйти на всех устройствах</button>
+                                        <button type="button" className="btn btn-warning m-2" onClick={logout}>Выйти на этом устройстве</button>
+                                </div>
                           </div>
                           <div className="row ">
                           <form onSubmit={truncateData}>
@@ -191,7 +195,7 @@ function Settings({ token }) {
                                                         <label htmlFor="passwordtruncate" >Введите текущий пароль</label>
                                         </div>
                                         <div className="form-floating pt-3">
-                                                        <button type="submit" className="btn btn-danger mb-3 btn-lg">Удалить все данные</button>
+                                                        <button type="submit" className="btn btn-danger mb-3 btn-lg">Очистить</button>
 
                                         </div>
 
@@ -201,12 +205,7 @@ function Settings({ token }) {
                                 </form>
                           </div>
 
-                          <div className="row ">
-                                <div className="col d-flex w-100 justify-content-around">
-                                        <button type="button" className="btn btn-danger m-2" onClick={fullLogout}>Выйти на всех устройствах</button>
-                                        <button type="button" className="btn btn-warning m-2" onClick={logout}>Выйти на этом устройстве</button>
-                                </div>
-                          </div>
+
                     </div>
 
                     <div className="col-lg">
