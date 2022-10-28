@@ -36,11 +36,11 @@ function Transactions({ token }) {
 
                 setTransactions(data.transactions);
                 setTransactionsNumber(data.count)
-                var dict = [];
-                data.transactions.map((transaction) => {
-                    if(dict.indexOf(transaction.comment) === -1 ) dict.push(transaction.comment)
-                });
-                setAutoFill(dict)
+//                 var dict = [];
+//                 data.transactions.map((transaction) => {
+//                     if(dict.indexOf(transaction.comment) === -1 ) dict.push(transaction.comment)
+//                 });
+//                 setAutoFill(dict)
              })
              .catch((err) => {
                 console.log(err.message);
