@@ -36,11 +36,7 @@ function Transactions({ token }) {
 
                 setTransactions(data.transactions);
                 setTransactionsNumber(data.count)
-//                 var dict = [];
-//                 data.transactions.map((transaction) => {
-//                     if(dict.indexOf(transaction.comment) === -1 ) dict.push(transaction.comment)
-//                 });
-//                 setAutoFill(dict)
+
              })
              .catch((err) => {
                 console.log(err.message);
@@ -61,6 +57,12 @@ function Transactions({ token }) {
              .catch((err) => {
                 console.log(err.message);
              });
+
+        var dict = autoFill;
+        transactions.transactions.map((transaction) => {
+                    if(dict.indexOf(transaction.comment) === -1 ) dict.push(transaction.comment)
+        });
+        setAutoFill(dict)
     };
 
     const updateTransaction = async e => {
