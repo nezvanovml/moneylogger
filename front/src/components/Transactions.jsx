@@ -63,6 +63,7 @@ function Transactions({ token }) {
                     if(dict.indexOf(transaction.comment) === -1 ) dict.push(transaction.comment)
         });
         setAutoFill(dict)
+        console.log(autoFill);
     };
 
     const updateTransaction = async e => {
