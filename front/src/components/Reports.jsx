@@ -68,7 +68,7 @@ function Reports({ token }) {
         <div className="container text-end mt-3 mb-3">
               <div className="row justify-content-md-center">
                     <div className="col-lg text-end">
-                          <h1>Сводка</h1>
+                          <h1>Отчёты</h1>
                           <form className=" ">
                                 <select className="form-select form-select-lg mb-3" onChange={e => setSearchCategory(e.target.value)}>
                                       <option selected>Все категории</option>

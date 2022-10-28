@@ -708,7 +708,7 @@ def export_to_csv():
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames, delimiter=';')
         writer.writeheader()
         for transaction in transactions:
-            writer.writerow({'date': transaction.date_of_spent.strftime("%Y-%m-%d"), 'category': transaction.name, 'amount': transaction.sum, 'description': transaction.comment})
+            writer.writerow({'date': transaction.date_of_spent.strftime("%Y-%m-%d"), 'category': transaction.name, 'amount': transaction.sum if transaction.sum > 0 else transaction.sum * (-1), 'description': transaction.comment})
         csvfile.seek(0)
         return Response(csvfile.read(), mimetype="text/csv", status=200)
 
