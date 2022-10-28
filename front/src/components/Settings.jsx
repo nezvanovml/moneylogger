@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from 'axios';
 import Alert from "./Alert.jsx";
 
-function Fileupload( token ) {
+function Fileupload( { token } ) {
     const [AlertUpload, setAlertUpload] = useState({'error':{'show': true, 'text': ''}, 'success': {'show': false, 'text': ''}});
     const onFileUpload = async e => {
       e.preventDefault();
@@ -165,7 +165,7 @@ function Settings({ token }) {
 
                           </div>
                           <div className="row m-3">
-                                <Fileupload token/>
+                                <Fileupload token={token}/>
                           </div>
                           <div className="row ">
                                 <div className="col d-flex w-100 justify-content-around">
