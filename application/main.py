@@ -713,7 +713,7 @@ def export_to_csv():
     return Response(json.dumps({'status': 'ERROR', 'description': 'Something went wrong.'}),
                     mimetype="application/json", status=500)
 
-@app.route('/api/categories/join', methods=['GET'])
+@app.route('/api/categories/join', methods=['POST'])
 @is_authorized()
 def categories_join():
     user_id = get_current_user()
@@ -730,20 +730,37 @@ def categories_join():
                         mimetype="application/json",
                         status=400)
 
+    category_to = request.args.get('category_to', None)
+    try:
+        category_to = int(category_to)
+    except ValueError:
+        return Response(json.dumps({'status': 'ERROR', 'description': f"category_to is not a int."}),
+                        mimetype="application/json",
+                        status=400)
+    except TypeError:
+        return Response(json.dumps({'status': 'ERROR', 'description': f"category_to not provided."}),
+                        mimetype="application/json",
+                        status=400)
 
+    transactions = Transactions.query.filter(Transactions.user_id == user_id, Transactions.category_id == category_from).order_by(Transactions.date_of_spent.desc(), Transactions.id.desc()).all()
+    for transaction in transactions:
+        transaction.category_id = category_to
+        try:
+            db.session.commit()
+        except Exception as error:
+            db.session.rollback()
+            return Response(json.dumps({'status': 'ERROR', 'description': error}), mimetype="application/json",
+                            status=500)
 
-    transactions = Transactions.query.filter(Transactions.user_id == user_id).join(Categories, Transactions.category_id==Categories.id).add_columns(Categories.name, Transactions.sum, Transactions.date_of_spent, Transactions.comment).order_by(Transactions.date_of_spent.desc(), Transactions.id.desc()).all()
-    with io.StringIO() as csvfile:
-        fieldnames = ['date', 'category', 'amount', 'description']
-        writer = csv.DictWriter(csvfile, fieldnames=fieldnames, delimiter=';')
-        writer.writeheader()
-        for transaction in transactions:
-            writer.writerow({'date': transaction.date_of_spent.strftime("%Y-%m-%d"), 'category': transaction.name, 'amount': transaction.sum, 'description': transaction.comment})
-        csvfile.seek(0)
-        return Response(csvfile.read(), mimetype="text/csv", status=200)
-
-    return Response(json.dumps({'status': 'ERROR', 'description': 'Something went wrong.'}),
-                    mimetype="application/json", status=500)
+    Categories.query.filter(Categories.id == category_from, Categories.user_id == user_id).delete()
+    try:
+        db.session.commit()
+    except Exception as error:
+        db.session.rollback()
+        return Response(json.dumps({'status': 'ERROR', 'description': error}), mimetype="application/json",
+                        status=500)
+    return Response(json.dumps({'status': 'SUCCESS', 'description': 'Categories joined.'}),
+                    mimetype="application/json", status=200)
 
 
 @app.route('/api/login', methods=['POST'])
