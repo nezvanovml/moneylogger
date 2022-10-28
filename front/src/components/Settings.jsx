@@ -165,7 +165,7 @@ function Settings({ token }) {
 
                           </div>
                           <div className="row m-3">
-                                <Fileupload token={token}/>
+                                <Fileupload token={token.token}/>
                           </div>
                           <div className="row ">
                                 <div className="col d-flex w-100 justify-content-around">
