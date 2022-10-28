@@ -65,9 +65,9 @@ function Reports({ token }) {
              .then((response) => response.json())
              .then((data) => {
                 console.log(data);
-                setTransactions(data.transactions);
+                setTransactions(data.transactions).then(() => count());
                 setTransactionsNumber(data.count)
-             }).then(() => count())
+             })
              .catch((err) => {
                 console.log(err.message);
              });
