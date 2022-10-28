@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from 'axios';
 import Alert from "./Alert.jsx";
 
-function Fileupload( ) {
+function Fileupload( token ) {
     const [AlertUpload, setAlertUpload] = useState({'error':{'show': true, 'text': ''}, 'success': {'show': false, 'text': ''}});
     const onFileUpload = async e => {
       e.preventDefault();
@@ -116,7 +116,7 @@ function Settings({ token }) {
         if(current_password.length > 0){
         let data = {'password': current_password}
         console.log(data)
-            let result = await fetch('/api/clear_all', { method: 'POST', headers: {'Authorization': token, 'Content-Type': 'application/json'}, body: JSON.stringify(data)}).catch(console.error)
+            let result = await fetch('/api/clear_all', { method: 'DELETE', headers: {'Authorization': token, 'Content-Type': 'application/json'}, body: JSON.stringify(data)}).catch(console.error)
             console.log(await result.json())
             let json_data = await result.json()
             if(json_data){
@@ -165,7 +165,7 @@ function Settings({ token }) {
 
                           </div>
                           <div className="row m-3">
-                                <Fileupload />
+                                <Fileupload token={token}/>
                           </div>
                           <div className="row ">
                                 <div className="col d-flex w-100 justify-content-around">
