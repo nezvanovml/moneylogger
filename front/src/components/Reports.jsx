@@ -25,6 +25,19 @@ function Reports({ token }) {
 
     const [AlertMain, setAlertMain] = useState({'error':{'show': false, 'text': ''}, 'success': {'show': false, 'text': ''}});
 
+    const count = () =>{
+        let temp_spent = 0;
+        let temp_income = 0;
+
+        transactions.map((transaction) => {
+                    console.log(transaction.sum)
+                    if(categoriesIncome[transaction.category]) temp_income += transaction.sum;
+                    else temp_spent += transaction.sum;
+                });
+
+        setSpent(temp_spent)
+        setIncome(temp_income)
+    }
 
     const loadData = (start, end, category) =>{
         fetch('/api/transactions?start_date='+start+'&end_date='+end+'&category='+category, {headers: {'Authorization': token}})
@@ -52,22 +65,13 @@ function Reports({ token }) {
                 setCategoriesDict(dictName);
                 setCategoriesIncome(dictIncome);
                 setCategoriesNumber(data.count)
+                count()
              })
              .catch((err) => {
                 console.log(err.message);
              });
 
-        let temp_spent = 0;
-        let temp_income = 0;
 
-        transactions.map((transaction) => {
-                    console.log(transaction.sum)
-                    if(categoriesIncome[transaction.category]) temp_income += transaction.sum;
-                    else temp_spent += transaction.sum * (-1);
-                });
-
-        setSpent(temp_spent)
-        setIncome(temp_income)
 
     };
 

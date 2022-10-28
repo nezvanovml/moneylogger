@@ -6,6 +6,7 @@ function Fileupload( { token } ) {
     const [AlertUpload, setAlertUpload] = useState({'error':{'show': false, 'text': ''}, 'success': {'show': false, 'text': ''}});
     const onFileUpload = async e => {
       e.preventDefault();
+      setAlertUpload({'error':{'show': false, 'text': ''}, 'success': {'show': false, 'text': ''}})
         console.log(token)
       const formData = new FormData();
       formData.append(
