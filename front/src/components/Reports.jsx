@@ -38,46 +38,28 @@ function Reports({ token }) {
         setIncome(temp_income)
     }
 
-    const loadData =  (start, end, category) =>{
+    const loadData = async () =>{
 
 
-        fetch('/api/categories',{headers: {'Authorization': token}})
+        let categories = await fetch('/api/categories',{headers: {'Authorization': token}})
              .then((response) => response.json())
-             .then((data) => {
-                console.log(data);
-                var dictName = {};
-                var dictIncome = {};
-                data.categories.map((category) => {
-                    dictName[category.id] = category.name
-                    dictIncome[category.id] = category.income
-                });
-                setCategories(data.categories);
-                setCategoriesDict(dictName);
-                setCategoriesIncome(dictIncome);
-                setCategoriesNumber(data.count)
-
-             })
              .catch((err) => {
                 console.log(err.message);
              });
+        console.log(categories)
 
-        fetch('/api/transactions?start_date='+start+'&end_date='+end+'&category='+category, {headers: {'Authorization': token}})
+        let transactions = await fetch('/api/transactions?start_date='+startDate+'&end_date='+endDate+'&category='+searchCategory, {headers: {'Authorization': token}})
              .then((response) => response.json())
-             .then((data) => {
-                console.log(data);
-                setTransactions(data.transactions).then(() => count());
-                setTransactionsNumber(data.count)
-             })
              .catch((err) => {
                 console.log(err.message);
              });
-
+        console.log(transactions)
 
     };
 
 
     useEffect( () => {
-         loadData(startDate, endDate, searchCategory);
+         loadData();
 
     }, [startDate, endDate, searchCategory]);
 
