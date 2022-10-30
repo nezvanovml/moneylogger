@@ -15,7 +15,7 @@ function Transactions({ token }) {
     const [transactionsNumber, setTransactionsNumber] = useState(0);
     const [categoriesNumber, setCategoriesNumber] = useState(0);
 
-    const [autoFill, setAutoFill] = useState([]);
+    const [autoFill, setAutoFill] = useState(['Текст 1','Текст 2','Текст 3']);
 
     const [startDate, setStartDate] = useState((subtractMonths(new Date(), 1)).toISOString().slice(0, 10));
     const [endDate, setEndDate] = useState(new Date().toISOString().slice(0, 10));
@@ -235,16 +235,6 @@ function Transactions({ token }) {
                                                                 </div>
                                                                 <div className="mb-3">
                                                                         <input className="form-control" name="comment"  list="datalistOptions" id="DataList" placeholder="Комментарий"  defaultValue={transaction.comment} />
-                                                                        <datalist id="datalistOptions">
-                                                                          <option value="San Francisco" />
-                                                                          {autoFill.forEach(item => {
-                                                                            return (
-                                                                                <option value={item} />
-                                                                            );
-                                                                            })}
-
-                                                                          { autoFill.forEach(function(item, index){ return (<option value={item} />)}) }
-                                                                        </datalist>
 {/*                                                                         <input type="text" name="comment" className="form-control" placeholder="Комментарий" id="exampleInputPassword1" defaultValue={transaction.comment}/> */}
                                                                 </div>
                                                                 <div className="d-flex w-100 justify-content-between">
