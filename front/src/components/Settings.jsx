@@ -81,17 +81,17 @@ function Settings({ token }) {
         let data = userData
         const target = e.target;
         console.log(target.name)
-
-        let result = await fetch('/api/user?'+target.name+'='+target.value, { method: 'POST', headers: {'Authorization': token}})
-        if (result.status == 201){
-            setAlertPersonal({'error':{'show': false, 'text': ''}, 'success': {'show': true, 'text': 'Изменения сохранены.'}});
-            loadData();
+        if(target.name != 'email'){
+            let result = await fetch('/api/user?'+target.name+'='+target.value, { method: 'POST', headers: {'Authorization': token}})
+            if (result.status == 201){
+                setAlertPersonal({'error':{'show': false, 'text': ''}, 'success': {'show': true, 'text': 'Изменения сохранены.'}});
+                loadData();
+            }
+            else {
+                setAlertPersonal({'error':{'show': true, 'text': 'Не удалось сохранить изменения.'}, 'success': {'show': false, 'text': ''}});
+                console.log(result)
+            }
         }
-        else {
-            setAlertPersonal({'error':{'show': true, 'text': 'Не удалось сохранить изменения.'}, 'success': {'show': false, 'text': ''}});
-            console.log(result)
-        }
-
     }
 
     const updatePassword = async e => {
