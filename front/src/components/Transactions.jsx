@@ -221,7 +221,7 @@ function Transactions({ token }) {
                                                                         <select name="category" className="form-select form-select-lg mb-3" id={"category"+transaction.id}>
                                                                         {categories.map((category) => {
                                                                                 return (
-                                                                                    <option value={category.id} key={category.id} selected={category.id == transaction.category ? "selected" : false} >{category.name}</option>
+                                                                                    <option value={category.id} key={category.id} selected={category.id == transaction.category_id ? "selected" : false} >{category.name}</option>
                                                                                 );
                                                                          })}
                                                                         </select>
