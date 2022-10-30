@@ -182,7 +182,7 @@ function Transactions({ token }) {
                                                                 <div className="mb-3">
                                                                         <input className="form-control" name="comment"  list="datalistOptions" id="DataList" placeholder="Комментарий" />
                                                                         <datalist id="datalistOptions">
-                                                                          {autoFill.forEach(item => {
+                                                                          {autoFill.map(function(item) {
                                                                             return (
                                                                                 <option value={item} />
                                                                             );
