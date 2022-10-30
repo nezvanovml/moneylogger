@@ -12,7 +12,6 @@ const subtractMonths = (date, months) => {
 function Transactions({ token }) {
     const [transactions, setTransactions] = useState([]);
     const [categories, setCategories] = useState([]);
-    const [categoriesDict, setCategoriesDict] = useState({});
     const [transactionsNumber, setTransactionsNumber] = useState(0);
     const [categoriesNumber, setCategoriesNumber] = useState(0);
 
@@ -51,7 +50,6 @@ function Transactions({ token }) {
                     dict[category.id] = category.name
                 });
                 setCategories(data.categories);
-                setCategoriesDict(dict);
                 setCategoriesNumber(data.count)
              })
              .catch((err) => {
@@ -129,10 +127,10 @@ function Transactions({ token }) {
                           <form className=" ">
                                 <select className="form-select form-select-lg mb-3" onChange={e => setSearchCategory(e.target.value)}>
                                       <option selected>Все категории</option>
-                                      {Object.entries(categoriesDict).map(([key, value]) => {
-                                         return (
-                                                <option value={key} key={key}>{value}</option>
-                                         );
+                                      {categories.map((category) => {
+                                            return (
+                                                <option value={category.id} key={category.id}>{category.name}</option>
+                                            );
                                       })}
                                 </select>
 
@@ -165,11 +163,13 @@ function Transactions({ token }) {
                                                         <form onSubmit={addTransaction}>
                                                                 <div className="mb-3">
                                                                         <select name="category" className="form-select form-select-lg mb-3">
-                                                                        {Object.entries(categoriesDict).map(([key, value]) => {
-                                                                            return (
-                                                                                <option value={key} key={key} selected={key == searchCategory ? "selected" : false} >{value}</option>
-                                                                            );
-                                                                        })}
+                                                                        {categories.map((category) => {
+                                                                                return (
+
+                                                                                    <option value={category.id} key={category.id} selected={category.id == searchCategory ? "selected" : false} >{category.name}</option>
+                                                                                );
+                                                                         })}
+
                                                                         </select>
                                                                 </div>
                                                                 <div className="form-floating mb-3">
@@ -203,10 +203,10 @@ function Transactions({ token }) {
                                 </li>
                                 {transactions.map((transaction) => {
                                     return (
-                                <li key={transaction.id} className={'list-group-item list-group-item-action text-dark bg-opacity-50 ' + (categories.find(o => o.id == transaction.category).income > 0 ? "bg-success" : "bg-danger")}  aria-current="true">
+                                <li key={transaction.id} className={'list-group-item list-group-item-action text-dark bg-opacity-50 ' + (transaction.category_income ? "bg-success" : "bg-danger")}  aria-current="true">
                                         <div data-bs-toggle="collapse" data-bs-target={"#collapseExample"+transaction.id} >
                                                 <div className="d-flex w-100 justify-content-between">
-                                                        <p className="fs-6 mb-1">{categoriesDict[transaction.category.toString()]}</p>
+                                                        <p className="fs-6 mb-1">{transaction.category_name}</p>
                                                         <p className="fs-6 mb-1">{new Date( Date.parse(transaction.date)).toLocaleString("ru", {year: 'numeric',month: 'long',day: 'numeric'})}</p>
                                                 </div>
                                                 <div className="d-flex w-100 justify-content-between">
@@ -219,12 +219,11 @@ function Transactions({ token }) {
                                                                 <input type="text" className="visually-hidden" name="id" defaultValue={transaction.id} />
                                                                 <div className="mb-3">
                                                                         <select name="category" className="form-select form-select-lg mb-3" id={"category"+transaction.id}>
-                                                                        {Object.entries(categoriesDict).map(([key, value]) => {
-                                                                        return (
-                                                                                <option value={key} key={key} selected={key == transaction.category ? "selected" : false} >{value}</option>
-                                                                        );
-                                                                        })
-                                                                        }
+                                                                        {categories.map((category) => {
+                                                                                return (
+                                                                                    <option value={category.id} key={category.id} selected={category.id == transaction.category ? "selected" : false} >{category.name}</option>
+                                                                                );
+                                                                         })}
                                                                         </select>
                                                                 </div>
                                                                 <div className="form-floating mb-3">

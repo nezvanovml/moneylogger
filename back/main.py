@@ -220,7 +220,7 @@ def transactions():
         for transaction in transactions:
             result['transactions'].append({
                     'id': transaction.id,
-                    'category': transaction.category_id,
+                    'category_id': transaction.category_id,
                     'category_name': transaction.name,
                     'category_income': transaction.income,
                     'date': transaction.date_of_spent.strftime("%Y-%m-%d"),
