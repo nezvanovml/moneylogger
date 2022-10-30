@@ -82,7 +82,7 @@ function Settings({ token }) {
         const target = e.target;
         console.log(target.name)
 
-        let result = await fetch('/api/user_info?'+target.name+'='+target.value, { method: 'POST', headers: {'Authorization': token}})
+        let result = await fetch('/api/user?'+target.name+'='+target.value, { method: 'POST', headers: {'Authorization': token}})
         if (result.status == 201){
             setAlertPersonal({'error':{'show': false, 'text': ''}, 'success': {'show': true, 'text': 'Изменения сохранены.'}});
             loadData();
@@ -148,7 +148,7 @@ function Settings({ token }) {
     }
 
     const loadData = () =>{
-        fetch('/api/user_info',{headers: {'Authorization': token}})
+        fetch('/api/user',{headers: {'Authorization': token}})
              .then((response) => response.json())
              .then((data) => {
                 console.log(data);
@@ -214,7 +214,7 @@ function Settings({ token }) {
                                                         <h1>Личные данные</h1>
                                                         <form>
                                                                 <div className="form-floating mb-3">
-                                                                        <input type="email" name="email" id="email_field" className="form-control" placeholder="E-mail" onChange={updateData} defaultValue={userData.email}  />
+                                                                        <input type="email" name="email" id="email_field" className="form-control-plaintext" placeholder="E-mail" onChange={updateData} defaultValue={userData.email}  readonly />
                                                                         <label htmlFor="email_field" >E-mail</label>
                                                                 </div>
                                                                 <div className="form-floating mb-3">

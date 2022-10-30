@@ -85,29 +85,6 @@ def remove_role_for_user(user_id, role_id):
         return False
 
 
-def change_password_authoritative(user_id, password):
-    user = User.query.filter(User.id == user_id).first()
-    if user and len(password) > 0:
-        pattern = r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$'  # от 8 символов в разном регистре с цифрами
-        hashed_password = hashlib.sha256(password.encode('utf-8')).hexdigest()
-        if re.match(pattern, password) is None:
-            return False
-        elif check_password_was_not_used_earlier(hashed_password, user.password_previous):
-            return False
-        user.password = hashed_password
-        if not user.password_previous:
-            user.password_previous = hashed_password
-        else:
-            user.password_previous = f"{user.password_previous};{hashed_password}"
-        try:
-            db.session.commit()
-        except Exception as error:
-            db.session.rollback()
-            return False
-        else:
-            return True
-    return False
-
 def have_roles(needed_roles):
     def wrapper(fn):
         @wraps(fn)
@@ -538,7 +515,7 @@ def categories():
     else:
         return Response(json.dumps({'status': 'ERROR', 'description': 'Method not allowed.'}), mimetype="application/json", status=405)
 
-@app.route('/api/user_info', methods=['GET', 'POST'])
+@app.route('/api/user', methods=['GET', 'POST'])
 @is_authorized()
 def user_info():
     if request.method == 'GET':
@@ -567,14 +544,14 @@ def user_info():
                 mimetype="application/json",
                 status=404)
 
-        email = request.args.get('email', None)
-        if email:
-            if not re.fullmatch(r"[^@]+@[^@]+\.[^@]+", email):
-                return Response(json.dumps({'status': 'ERROR', 'description': f"Incorrect format of email."}),
-                                mimetype="application/json",
-                                status=400)
-            user.email = email
-            need_update = True
+        # email = request.args.get('email', None)
+        # if email:
+        #     if not re.fullmatch(r"[^@]+@[^@]+\.[^@]+", email):
+        #         return Response(json.dumps({'status': 'ERROR', 'description': f"Incorrect format of email."}),
+        #                         mimetype="application/json",
+        #                         status=400)
+        #     user.email = email
+        #     need_update = True
 
         first_name = request.args.get('first_name', None)
         if first_name:
