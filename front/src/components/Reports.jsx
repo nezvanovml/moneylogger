@@ -9,8 +9,8 @@ const subtractMonths = (date, months) => {
 
 
 function Reports({ token }) {
+    const [categories, setCategories] = useState([]);
     const [transactionsNumber, setTransactionsNumber] = useState(0);
-    const [categoriesDict, setCategoriesDict] = useState({});
 
     const [startDate, setStartDate] = useState((subtractMonths(new Date(), 1)).toISOString().slice(0, 10));
     const [endDate, setEndDate] = useState(new Date().toISOString().slice(0, 10));
@@ -25,17 +25,15 @@ function Reports({ token }) {
     const loadData = async () =>{
 
 
-        let categories = await fetch('/api/categories',{headers: {'Authorization': token}})
+        fetch('/api/categories',{headers: {'Authorization': token}})
              .then((response) => response.json())
+             .then((data) => {
+                console.log(data);
+                setCategories(data.categories);
+             })
              .catch((err) => {
                 console.log(err.message);
              });
-        console.log(categories)
-        var dictName = {};
-        categories.categories.map((category) => {
-                    dictName[category.id] = category.name
-        });
-        setCategoriesDict(dictName);
 
         let transactions = await fetch('/api/transactions?start_date='+startDate+'&end_date='+endDate+'&category='+searchCategory, {headers: {'Authorization': token}})
              .then((response) => response.json())
@@ -49,7 +47,7 @@ function Reports({ token }) {
         let temp_income = 0;
 
         transactions.transactions.map((transaction) => {
-                    if(categories.categories.find(o => o.id == transaction.category).income) temp_income += transaction.sum;
+                    if(transaction.category_income) temp_income += transaction.sum;
                     else temp_spent += transaction.sum;
                 });
         console.log(temp_income, temp_spent)
@@ -72,10 +70,10 @@ function Reports({ token }) {
                           <form className=" ">
                                 <select className="form-select form-select-lg mb-3" onChange={e => setSearchCategory(e.target.value)}>
                                       <option selected>Все категории</option>
-                                      {Object.entries(categoriesDict).map(([key, value]) => {
-                                         return (
-                                                <option value={key} key={key}>{value}</option>
-                                         );
+                                      {categories.map((category) => {
+                                            return (
+                                                <option value={category.id} key={category.id}>{category.name}</option>
+                                            );
                                       })}
                                 </select>
 
