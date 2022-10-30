@@ -213,12 +213,16 @@ def transactions():
         if category_id:
             transactions = transactions.filter(Transactions.category_id == category_id)
 
-        transactions = transactions.order_by(Transactions.date_of_spent.desc(), Transactions.id.desc()).all()
+        transactions = transactions.join(Categories, Transactions.category_id==Categories.id).\
+            add_columns(Transactions.id, Transactions.category_id, Transactions.date_of_spent, Transactions.sum, Transactions.comment, Categories.name, Categories.income).\
+            order_by(Transactions.date_of_spent.desc(), Transactions.id.desc()).all()
         result = {'count': len(transactions), 'transactions': []}
         for transaction in transactions:
             result['transactions'].append({
                     'id': transaction.id,
                     'category': transaction.category_id,
+                    'category_name': transaction.name,
+                    'category_income': transaction.income,
                     'date': transaction.date_of_spent.strftime("%Y-%m-%d"),
                     'sum': transaction.sum,
                     'comment': transaction.comment
@@ -762,7 +766,6 @@ def login():
                     mimetype="application/json", status=404)
 
 
-
 @app.route('/api/destroy_token', methods=['POST'])
 @is_authorized()
 def destroy_token():
@@ -777,9 +780,10 @@ def destroy_token():
     return Response(json.dumps({'status': 'ERROR', 'description': 'check provided credentials.'}),
                     mimetype="application/json", status=404)
 
+
 @app.route('/api/change_password', methods=['POST'])
 @is_authorized()
-def change_password_ordinary():
+def change_password():
 
     if not request.is_json:
         return Response(json.dumps({'status': 'ERROR', 'description': 'Provide correct JSON structure.'}),
@@ -826,6 +830,7 @@ def change_password_ordinary():
                         status=400)
     return Response(json.dumps({'status': 'ERROR', 'description': 'check provided data format.'}),
                     mimetype="application/json", status=400)
+
 
 @app.route('/api/clear_all', methods=['DELETE'])
 @is_authorized()
@@ -874,10 +879,6 @@ def checkauth():
     return Response(json.dumps({'status': 'SUCCESS', 'description': 'Token is correct.'}),
                             mimetype="application/json", status=200)
 
-@app.route('/api/heartbeat', methods=['GET'])
-def heartbeat():
-    return Response(json.dumps({'status': 'SUCCESS', 'description': 'I am alive!'}),
-                            mimetype="application/json", status=200)
 
 if __name__ == "__main__":
     app.run(debug=False)
