@@ -117,7 +117,7 @@ function Transactions({ token }) {
 
     useEffect(() => {
         loadData(startDate, endDate, searchCategory);
-    }, [startDate, endDate, searchCategory]);
+    }, [startDate, endDate, searchCategory, autoFill]);
 
   return (
         <div className="container text-end mt-3 mb-3">
@@ -165,7 +165,6 @@ function Transactions({ token }) {
                                                                         <select name="category" className="form-select form-select-lg mb-3">
                                                                         {categories.map((category) => {
                                                                                 return (
-
                                                                                     <option value={category.id} key={category.id} selected={category.id == searchCategory ? "selected" : false} >{category.name}</option>
                                                                                 );
                                                                          })}
@@ -177,7 +176,7 @@ function Transactions({ token }) {
                                                                         <label htmlFor="InputEnd">Дата</label>
                                                                 </div>
                                                                 <div className="input-group mb-3">
-                                                                        <input type="number" step="0.01" name="sum" className="form-control" placeholder="Сумма" defaultValue="0" aria-describedby="basic-addon2" />
+                                                                        <input type="number" step="0.01" name="sum" className="form-control" placeholder="Сумма" aria-describedby="basic-addon2" />
                                                                         <span className="input-group-text" id="basic-addon2">₽</span>
                                                                 </div>
                                                                 <div className="mb-3">
