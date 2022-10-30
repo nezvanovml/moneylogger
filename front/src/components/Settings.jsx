@@ -214,7 +214,7 @@ function Settings({ token }) {
                                                         <h1>Личные данные</h1>
                                                         <form>
                                                                 <div className="form-floating mb-3">
-                                                                        <input type="email" name="email" id="email_field" className="form-control-plaintext" placeholder="E-mail" onChange={updateData} defaultValue={userData.email}  readonly />
+                                                                        <input type="text" readonly name="email" id="email_field" className="form-control-plaintext" placeholder="E-mail" onChange={updateData} value={userData.email}   />
                                                                         <label htmlFor="email_field" >E-mail</label>
                                                                 </div>
                                                                 <div className="form-floating mb-3">
