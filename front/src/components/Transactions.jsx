@@ -15,7 +15,7 @@ function Transactions({ token }) {
     const [transactionsNumber, setTransactionsNumber] = useState(0);
     const [categoriesNumber, setCategoriesNumber] = useState(0);
 
-    const [autoFill, setAutoFill] = useState(['Текст 1','Текст 2','Текст 3']);
+    const [autoFill, setAutoFill] = useState([]);
 
     const [startDate, setStartDate] = useState((subtractMonths(new Date(), 1)).toISOString().slice(0, 10));
     const [endDate, setEndDate] = useState(new Date().toISOString().slice(0, 10));
@@ -32,15 +32,16 @@ function Transactions({ token }) {
              .then((response) => response.json())
              .then((data) => {
                 console.log(data);
-
-                setTransactions(data.transactions);
-                setTransactionsNumber(data.count)
                 var dict = autoFill;
-                transactions.map((transaction) => {
+                data.transactions.map((transaction) => {
                             if(dict.indexOf(transaction.comment) === -1 ) dict.push(transaction.comment)
                 });
                 setAutoFill(dict)
                 console.log(autoFill);
+
+                setTransactions(data.transactions);
+                setTransactionsNumber(data.count)
+
 
              })
              .catch((err) => {
