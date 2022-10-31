@@ -536,6 +536,11 @@ def register():
                 return Response(json.dumps({'status': 'ERROR', 'description': f"Incorrect format of email."}),
                                 mimetype="application/json",
                                 status=400)
+            user = User.query.filter(User.email == email).first()
+            if user:
+                return Response(json.dumps({'status': 'ERROR', 'description': f"User with this email already registered."}),
+                                mimetype="application/json",
+                                status=400)
 
         password = data.get('password', None)
         if not password:
