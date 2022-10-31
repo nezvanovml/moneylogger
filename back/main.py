@@ -519,6 +519,82 @@ def categories():
     else:
         return Response(json.dumps({'status': 'ERROR', 'description': 'Method not allowed.'}), mimetype="application/json", status=405)
 
+@app.route('/api/register', methods=['POST'])
+def register():
+    if not request.is_json:
+        return Response(json.dumps({'status': 'ERROR', 'description': 'Provide correct JSON structure.'}),
+                        mimetype="application/json", status=400)
+    data = request.get_json()
+    if data:
+        email = data.get('email', None)
+        if not email:
+            return Response(json.dumps({'status': 'ERROR', 'description': f"email not provided."}),
+                            mimetype="application/json",
+                            status=400)
+        if email:
+            if not re.fullmatch(r"[^@]+@[^@]+\.[^@]+", email):
+                return Response(json.dumps({'status': 'ERROR', 'description': f"Incorrect format of email."}),
+                                mimetype="application/json",
+                                status=400)
+
+        password = data.get('password', None)
+        if not password:
+            return Response(json.dumps({'status': 'ERROR', 'description': f"password not provided."}),
+                            mimetype="application/json",
+                            status=400)
+
+        pattern = r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$'  # от 8 символов в разном регистре с цифрами
+        if re.match(pattern, password) is None:
+            return Response(json.dumps({'status': 'ERROR', 'description': f"Password not matches security policy."}),
+                                mimetype="application/json",
+                                status=400)
+
+        first_name = data.get('first_name', None)
+        if not first_name:
+            return Response(json.dumps({'status': 'ERROR', 'description': f"first_name not provided."}),
+                            mimetype="application/json",
+                            status=400)
+        last_name = data.get('last_name', None)
+        if not last_name:
+            return Response(json.dumps({'status': 'ERROR', 'description': f"last_name not provided."}),
+                            mimetype="application/json",
+                            status=400)
+
+        birthdate = data.get('birthdate', None)
+
+        try:
+            birthdate = datetime.datetime.strptime(birthdate, '%Y-%m-%d').date()
+        except ValueError:
+            return Response(json.dumps(
+                    {'status': 'ERROR', 'description': f"Incorrect format of birthdate. Must be YYYY-MM-DD."}),
+                    mimetype="application/json",
+                    status=400)
+        except TypeError:
+            return Response(json.dumps({'status': 'ERROR', 'description': f"birthdate not provided."}),
+                                mimetype="application/json",
+                                status=400)
+
+        user = add_user(email=email, password=password, first_name=first_name, last_name=last_name,
+                        birthdate=birthdate)
+        user_role = add_role("USER")
+        result = False
+        if user_role and user:
+            result = add_role_for_user(user, user_role)
+
+        if result:
+            return Response(json.dumps({'status': 'SUCCESS', 'description': 'CREATED', 'id': user.id}),
+                            mimetype="application/json",
+                            status=201)
+        else:
+            return Response(json.dumps({'status': 'ERROR', 'description': f"Undefined error adding user."}),
+                            mimetype="application/json",
+                            status=500)
+    else:
+        return Response(json.dumps({'status': 'ERROR', 'description': 'check provided data format.'}),
+                        mimetype="application/json", status=400)
+
+
+
 @app.route('/api/user', methods=['GET', 'POST'])
 @is_authorized()
 def user_info():

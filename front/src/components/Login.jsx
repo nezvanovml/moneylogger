@@ -19,6 +19,7 @@ export default function Login({ setToken }) {
   const [password, setPassword] = useState();
   const [hideErrorbox, setHideErrorbox] = useState(true);
   const [AlertMain, setAlertMain] = useState({'error':{'show': false, 'text': ''}, 'success': {'show': false, 'text': ''}});
+  const [AlertRegister, setAlertRegister] = useState({'error':{'show': false, 'text': ''}, 'success': {'show': false, 'text': ''}});
 
   const handleSubmit = async e => {
     e.preventDefault();
@@ -40,7 +41,7 @@ export default function Login({ setToken }) {
 
   return (
     <div className="text-center">
-      <main className="form-signin w-100 mt-5 m-auto">
+      <div className="form-signin w-100 mt-5 m-auto">
 
         <form onSubmit={handleSubmit}>
             <h1 className="h3 mb-3 fw-normal">MoneyLogger</h1>
@@ -53,10 +54,49 @@ export default function Login({ setToken }) {
             <label htmlFor="InputPassword">Пароль</label>
           </div>
           <button type="submit" className="btn btn-primary">Войти</button>
+          <button className="btn btn-link" type="button" data-bs-toggle="collapse" data-bs-target="#collapseRegister" aria-expanded="false" aria-controls="collapseExample">Зарегистрироваться</button>
           <Alert source={AlertMain} />
         </form>
 
-      </main>
+      </div>
+      <div className="collapse" id="collapseRegister">
+          <div className="container text-end mt-3 mb-3">
+            <div className="row justify-content-md-center">
+              <div className="col-sm text-end">
+                <form>
+                   <div className="form-floating mb-3">
+                      <input type="email"  name="email" id="email_field" className="form-control"/>
+                      <label htmlFor="email_field" >E-mail</label>
+                   </div>
+                   <div className="form-floating mb-3">
+                      <input type="text" name="first_name" id="first_name_field" className="form-control"  />
+                      <label htmlFor="first_name_field" >Имя</label>
+                   </div>
+                   <div className="form-floating mb-3">
+                      <input type="text" name="last_name" id="last_name_field" className="form-control"   />
+                      <label htmlFor="last_name_field" >Фамилия</label>
+                   </div>
+                   <div className="form-floating mb-3">
+                      <input type="date" name="birthdate" className="form-control" id="birthdate"/>
+                      <label htmlFor="birthdate">Дата рождения</label>
+                   </div>
+                   <div className="form-floating mb-3">
+                      <input type="password" name="password_new_1" id="password1" className="form-control"  />
+                      <label htmlFor="password1" >Введите пароль</label>
+                   </div>
+                   <div className="form-floating mb-3">
+                      <input type="password" name="password_new_2" id="password2" className="form-control"  />
+                      <label htmlFor="password2" >Повторите пароль</label>
+                   </div>
+                   <div className="form-floating mb-3 text-center">
+                       <button type="submit" className="btn btn-primary">Зарегистрироваться</button>
+                       <Alert source={AlertRegister} />
+                   </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
     </div>
   );
 }
