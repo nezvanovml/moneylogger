@@ -587,7 +587,7 @@ def register():
             result = add_role_for_user(user, user_role)
 
         if result:
-            return Response(json.dumps({'status': 'SUCCESS', 'description': 'CREATED', 'id': user}),
+            return Response(json.dumps({'status': 'SUCCESS', 'description': 'CREATED'}),
                             mimetype="application/json",
                             status=201)
         else:
