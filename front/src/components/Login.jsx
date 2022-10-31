@@ -39,19 +39,13 @@ export default function Login({ setToken }) {
             if(json_data){
                     if (json_data.status == 'SUCCESS') {
                         setAlertRegister({'error':{'show': false, 'text': ''}, 'success': {'show': true, 'text': 'Пользователь зарегистрирован.'}});
-                        setEmail(email)
-                        setPassword(password_new_1)
-                        let credentials = {'email': email, 'password': password}
+                        let credentials = {'email': email, 'password': password_new_1}
                         let result = await fetch('/api/login', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(credentials)})
                         let json_data = await result.json()
                         if(json_data.status == 'SUCCESS'){
                             console.log('Token: ' + json_data.token)
-                            setAlertMain({'error':{'show': false, 'text': ''}, 'success': {'show': true, 'text': 'Данные для входа верны, происходит авторизация.'}});
                             setToken(json_data.token);
 
-                        } else {
-                            setAlertMain({'error':{'show': true, 'text': 'Указаны неверные данные для входа.'}, 'success': {'show': false, 'text': ''}});
-                            console.log('error logging in')
                         }
                     } else {
                          setAlertRegister({'error':{'show': true, 'text': 'Ошибка: '+json_data.description}, 'success': {'show': false, 'text': ''}});
