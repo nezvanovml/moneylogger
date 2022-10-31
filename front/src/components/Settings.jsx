@@ -239,7 +239,7 @@ function Settings({ token }) {
                                                                 <Alert source={AlertPersonal} />
                                                         </form>
                                                 </div>
-                                                <div className=" mt-2">
+                                                <div className=" mt-2 mb-5">
                                                 <h1>Пароль</h1>
                                                         <form onSubmit={updatePassword}>
                                                                 <div className="form-floating mb-3">

@@ -8,4 +8,4 @@ Current functionality:
 * Show report for selected categories & time intervals. Now it represents onl textual information, diagrams will be added ASAP;
 * Import/export user data (CSV, delimiter is ';', date format is 'dd-mm-yyyy', encoding is 'UTF-8');
 
-Access it on: https:// money.nezvanov.ru
+Access it on: https://money.nezvanov.ru
