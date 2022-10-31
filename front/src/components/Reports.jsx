@@ -6,10 +6,7 @@ import { Doughnut } from 'react-chartjs-2';
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 const randomNum = () => Math.floor(Math.random() * (235 - 52 + 1) + 52);
-    const randomRGB = () => `rgb(${randomNum()}, ${randomNum()}, ${randomNum()})`;
-
-export const data = {labels: [],datasets: [{label: 'Суммарные траты',data: [],backgroundColor: [],borderWidth: 2,},]}
-
+const randomRGB = () => `rgb(${randomNum()}, ${randomNum()}, ${randomNum()})`;
 
 const subtractMonths = (date, months) => {
       const result = new Date(date);
@@ -70,6 +67,7 @@ function Reports({ token }) {
         setIncome(temp_income)
 
         let categories_spent = {}
+        const data = {labels: [],datasets: [{label: 'Суммарные траты',data: [],backgroundColor: [],borderWidth: 2,},]}
 
         transactions.transactions.map((transaction) => {
             if(!transaction.category_income){
