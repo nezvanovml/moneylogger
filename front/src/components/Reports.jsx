@@ -69,7 +69,7 @@ function Reports({ token }) {
 
         transactions.transactions.map((transaction) => {
             const name = transaction.category_name
-            if(categories_spent.indexOf(name) === -1 ) categories_spent.name = transaction.sum
+            if(categories_spent.hasOwnProperty(name) ) categories_spent[name] = transaction.sum
             else categories_spent.name += transaction.sum
         });
 
