@@ -519,7 +519,7 @@ def categories():
     else:
         return Response(json.dumps({'status': 'ERROR', 'description': 'Method not allowed.'}), mimetype="application/json", status=405)
 
-@app.route('/api/register', methods=['POST'])
+@app.route('/api/register', methods=['PUT'])
 def register():
     if not request.is_json:
         return Response(json.dumps({'status': 'ERROR', 'description': 'Provide correct JSON structure.'}),
