@@ -72,9 +72,10 @@ function Reports({ token }) {
         let categories_spent = {}
 
         transactions.transactions.map((transaction) => {
-
-            if(!categories_spent[transaction.category_name] ) categories_spent[transaction.category_name] = 0
-            categories_spent[transaction.category_name] += transaction.sum
+            if(!transaction.category_income){
+                if(!categories_spent[transaction.category_name] ) categories_spent[transaction.category_name] = 0
+                categories_spent[transaction.category_name] += transaction.sum
+            }
         });
 
         console.log(categories_spent)
