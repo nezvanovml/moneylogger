@@ -58,8 +58,12 @@ function Reports({ token }) {
         let temp_income = 0;
 
         transactions.transactions.map((transaction) => {
-                    if(transaction.category_income) temp_income += transaction.sum;
-                    else temp_spent += transaction.sum;
+                    if(transaction.category_income) {
+                        temp_income += transaction.sum
+                    } else {
+                        temp_spent += transaction.sum;
+                    }
+
                 });
         console.log(temp_income, temp_spent)
         setSpent(temp_spent)
@@ -68,9 +72,9 @@ function Reports({ token }) {
         let categories_spent = {}
 
         transactions.transactions.map((transaction) => {
-            const name = transaction.category_name
-            if(categories_spent.hasOwnProperty(name) ) categories_spent.name = transaction.sum
-            else categories_spent.name += transaction.sum
+
+            if(!categories_spent[transaction.category_name] ) categories_spent[transaction.category_name] = 0
+            categories_spent[transaction.category_name] += transaction.sum
         });
 
         console.log(categories_spent)
