@@ -85,6 +85,7 @@ function Reports({ token }) {
             data.datasets[0].data.push(categories_spent[category])
             data.datasets[0].backgroundColor.push(randomRGB())
         }
+        setSpentData(data)
 
     };
 
@@ -131,7 +132,7 @@ function Reports({ token }) {
                     <div className="col-lg mb-5 ">
 
                           <div className="row justify-content-md-center">
-                                <Doughnut data={data} />
+                                <Doughnut data={spentData} />
                           </div>
                     </div>
               </div>
