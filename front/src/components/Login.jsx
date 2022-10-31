@@ -21,7 +21,42 @@ export default function Login({ setToken }) {
   const [AlertMain, setAlertMain] = useState({'error':{'show': false, 'text': ''}, 'success': {'show': false, 'text': ''}});
   const [AlertRegister, setAlertRegister] = useState({'error':{'show': false, 'text': ''}, 'success': {'show': false, 'text': ''}});
 
-  const handleSubmit = async e => {
+  const register = async e => {
+        e.preventDefault();
+        const target = e.target;
+        console.log(target.name)
+        let email = e.target.elements.email.value;
+        let first_name = e.target.elements.first_name.value;
+        let last_name = e.target.elements.last_name.value;
+        let birthdate = e.target.elements.birthdate.value;
+        let password_new_1 = e.target.elements.password_new_1.value;
+        let password_new_2 = e.target.elements.password_new_2.value;
+        console.log(email, first_name, last_name, birthdate, password_new_1, password_new_2)
+        let data = {"email":email, "password": password_new_1, "first_name":first_name, "last_name": last_name, "birthdate": birthdate}
+        if(password_new_1 === password_new_2){
+            let result = await fetch('/api/register', { method: 'PUT', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data)})
+            let json_data = await result.json()
+            if(json_data){
+                    if (json_data.status == 'SUCCESS') {
+                        setAlertRegister({'error':{'show': false, 'text': ''}, 'success': {'show': true, 'text': 'Пользователь зарегистрирован.'}});
+                        setEmail(email)
+                        setPassword(password_new_1)
+                        login()
+                    } else {
+                         setAlertRegister({'error':{'show': true, 'text': 'Ошибка: '+json_data.description}, 'success': {'show': false, 'text': ''}});
+                         console.log(result)
+                    }
+            } else setAlertRegister({'error':{'show': true, 'text': 'Ошибка при обращении к серверу.'}, 'success': {'show': false, 'text': ''}});
+        } else {
+            setAlertRegister({'error':{'show': true, 'text': 'Введённые пароли не совпадают.'}, 'success': {'show': false, 'text': ''}});
+        }
+
+
+
+    }
+
+
+  const login = async e => {
     e.preventDefault();
     let credentials = {'email': email, 'password': password}
     console.log(JSON.stringify(credentials))
@@ -43,7 +78,7 @@ export default function Login({ setToken }) {
     <div className="text-center">
       <div className="form-signin w-100 mt-5 m-auto">
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={login}>
             <h1 className="h3 mb-3 fw-normal">MoneyLogger</h1>
           <div className="form-floating">
             <input type="email" className="form-control" id="InputEmail" onChange={e => setEmail(e.target.value)}/>
@@ -63,7 +98,7 @@ export default function Login({ setToken }) {
           <div className="container text-end mt-3 mb-3">
             <div className="row justify-content-md-center">
               <div className="col-sm text-end">
-                <form>
+                <form onSubmit={register}>
                    <div className="form-floating mb-3">
                       <input type="email"  name="email" id="email_field" className="form-control"/>
                       <label htmlFor="email_field" >E-mail</label>
