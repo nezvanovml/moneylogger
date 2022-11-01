@@ -100,7 +100,7 @@ export default function Login({ setToken }) {
 
       </div>
       <div className="collapse" id="collapseRegister">
-          <div className="container text-end mt-3 mb-3">
+          <div className="container text-end mt-3 mb-3 form-signup">
             <div className="row justify-content-md-center">
               <div className="col-sm text-end">
                 <form onSubmit={register}>
