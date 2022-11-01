@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import PropTypes from 'prop-types';
 import Alert from "./Alert.jsx";
+import img_interface from '../img/interface.png'
+import img_diagram from '../img/graph.png'
+import img_homescreen from '../img/homescreen.png'
 
 async function loginUser(credentials) {
 console.log(JSON.stringify(credentials))
@@ -81,10 +84,14 @@ export default function Login({ setToken }) {
 
   return (
     <div className="text-center">
+      <div className="container mt-5 mb-3">
+          <div className="col-lg-6 col-md-8 mx-auto">
+            <h1 className="fw-light">MoneyLogger</h1>
+            <p className="lead text-muted">Начните вести журнал своих трат.</p>
+          </div>
+      </div>
       <div className="form-signin w-100 mt-5 m-auto">
-
         <form onSubmit={login}>
-            <h1 className="h3 mb-3 fw-normal">MoneyLogger</h1>
           <div className="form-floating">
             <input type="email" className="form-control" id="InputEmail" onChange={e => setEmail(e.target.value)}/>
             <label htmlFor="InputEmail">Email</label>
@@ -97,7 +104,6 @@ export default function Login({ setToken }) {
           <button className="btn btn-link" type="button" data-bs-toggle="collapse" data-bs-target="#collapseRegister" aria-expanded="false" aria-controls="collapseExample">Зарегистрироваться</button>
           <Alert source={AlertMain} />
         </form>
-
       </div>
       <div className="collapse" id="collapseRegister">
           <div className="container text-end mt-3 mb-3 form-signup">
@@ -136,7 +142,32 @@ export default function Login({ setToken }) {
               </div>
             </div>
           </div>
+      </div>
+      <div className="container mt-3 mb-3">
+        <div className="row g-4 py-5 row-cols-1 row-cols-lg-3">
+          <div className="feature col text-start">
+            <div className="text-center ">
+                <img src={img_interface} className="bi mb-3" height="200em" />
+            </div>
+            <h2 className="fw-light">Удобный интерфейс</h2>
+            <p className="lead text-muted">Приложением удобно пользоваться как с десктопа, так и с мобильных устройств.</p>
+          </div>
+          <div className="feature col text-start">
+            <div className="text-center">
+                <img src={img_diagram} className="bi mb-3" height="200em" />
+            </div>
+            <h2 className="fw-light">Визуализация трат</h2>
+            <p className="lead text-muted">Приложение динамически строит диаграмму, что позволяет наглядно оценить структуру ваших трат.</p>
+          </div>
+          <div className="feature col text-start">
+            <div className="text-center">
+                <img src={img_homescreen} className="bi mb-3" height="200em" />
+            </div>
+            <h2 className="fw-light">Мобильное приложение</h2>
+            <p className="lead text-muted">Приложение можно установить на домашний экран смартфона, что упрощает использование. Таким образом, вам не потребуется открывать браузер каждый раз.</p>
+          </div>
         </div>
+      </div>
     </div>
   );
 }
