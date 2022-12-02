@@ -519,6 +519,23 @@ def categories():
     else:
         return Response(json.dumps({'status': 'ERROR', 'description': 'Method not allowed.'}), mimetype="application/json", status=405)
 
+@app.route('/api/comments_by_categories', methods=['GET'])
+@is_authorized()
+def comments_by_categories():
+    result = {}
+    categories = Categories.query.filter(Categories.user_id == get_current_user()).order_by(
+        Categories.income.desc(), Categories.id).all()
+    for category in categories:
+        comments = Transactions.query.filter(Transactions.category_id == category.id).with_entities(
+            Transactions.comment).distinct().all()
+        for comment in comments:
+            if category.id not in result.keys():
+                result[category.id] = [comment.comment]
+            else:
+                result[category.id].append(comment.comment)
+    return Response(json.dumps(result), mimetype="application/json", status=200)
+
+
 @app.route('/api/register', methods=['PUT'])
 def register():
     if not request.is_json:

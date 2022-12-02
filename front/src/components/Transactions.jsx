@@ -213,7 +213,7 @@ function Transactions({ token }) {
                                         <div data-bs-toggle="collapse" data-bs-target={"#collapseExample"+transaction.id} >
                                                 <div className="d-flex w-100 justify-content-between">
                                                         <p className="fs-6 mb-1">{transaction.category_name}</p>
-                                                        <p className="fs-6 mb-1">{new Date( Date.parse(transaction.date)).toLocaleString("ru", {year: 'numeric',month: 'long',day: 'numeric'})}</p>
+                                                        <p className="fs-6 mb-1">{ new Date( Date.parse(transaction.date)).toLocaleString("ru", {year: 'numeric',month: 'long',day: 'numeric'}) }</p>
                                                 </div>
                                                 <div className="d-flex w-100 justify-content-between">
                                                         <p className="fs-6 text-start mb-1">{transaction.comment}</p><p className="fs-6 fw-bold mb-1"> {(transaction.sum > 0 ? transaction.sum : transaction.sum * (-1)).toLocaleString('ru', {style: 'currency', currency: 'RUB'})}</p>

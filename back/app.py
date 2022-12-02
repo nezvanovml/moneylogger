@@ -97,7 +97,7 @@ class Transactions(db.Model):
     comment = db.Column(db.Text, nullable=True)
 
     def __repr__(self):
-        return 'Employee %r' % self.id
+        return 'Transaction %r' % self.id
 
 class Categories(db.Model):
     __tablename__ = 'categories'
