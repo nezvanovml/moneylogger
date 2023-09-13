@@ -2,7 +2,8 @@ import os
 import yaml
 import pathlib
 import datetime
-
+import sentry_sdk
+from sentry_sdk.integrations.flask import FlaskIntegration
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
@@ -22,6 +23,19 @@ def get_config(path):
     return config
 
 config = get_config(config_path)
+
+# initialize sentry
+sentry_sdk.init(
+    dsn=os.environ.get('MONEYLOGGER_SENTRY_DSN'),
+    integrations=[
+        FlaskIntegration(),
+    ],
+
+    # Set traces_sample_rate to 1.0 to capture 100%
+    # of transactions for performance monitoring.
+    # We recommend adjusting this value in production.
+    traces_sample_rate=1.0
+)
 
 #initialize flaskapp object
 app = Flask(__name__)
