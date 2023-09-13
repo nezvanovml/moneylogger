@@ -11,16 +11,17 @@ from flask_mail import Mail
 from celery import Celery
 from flask_cors import CORS
 
-
 # reading configuration from file
 BASE_DIR = pathlib.Path(__file__).parent
 config_path = BASE_DIR / 'config' / 'config.yaml'
+
 
 def get_config(path):
     with open(path) as f:
         print(f"Loading setting from: {path}")
         config = yaml.safe_load(f)
     return config
+
 
 config = get_config(config_path)
 
@@ -37,16 +38,17 @@ sentry_sdk.init(
     traces_sample_rate=1.0
 )
 
-#initialize flaskapp object
+# initialize flaskapp object
 app = Flask(__name__)
-#CORS(app)
+# CORS(app)
 
 app.config['WTF_CSRF_ENABLED'] = False
 app.config['MAX_CONTENT_LENGTH'] = 1024 * 1024 * 10
 app.config['UPLOAD_FOLDER'] = '/srv/downloads'
 ALLOWED_EXTENSIONS = {'csv'}
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', None)
-app.config['SQLALCHEMY_DATABASE_URI'] = f'postgresql://{config["postgres"]["user"]}:{os.environ.get("POSTGRES_PASSWORD", "")}@{config["postgres"]["host"]}:{config["postgres"]["port"]}/{config["postgres"]["database"]}'
+app.config[
+    'SQLALCHEMY_DATABASE_URI'] = f'postgresql://{config["postgres"]["user"]}:{os.environ.get("POSTGRES_PASSWORD", "")}@{config["postgres"]["host"]}:{config["postgres"]["port"]}/{config["postgres"]["database"]}'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
@@ -65,12 +67,10 @@ app.config['MAIL_USERNAME'] = config["email"]["login"]
 app.config['MAIL_PASSWORD'] = os.environ.get("EMAIL_PASSWORD", "")
 mail = Mail(app)
 
-
 userxrole = db.Table('userxrole',
-                         db.Column('user', db.Integer, db.ForeignKey('user.id'), primary_key=True),
-                         db.Column('role', db.Integer, db.ForeignKey('role.id'), primary_key=True)
-                         )
-
+                     db.Column('user', db.Integer, db.ForeignKey('user.id'), primary_key=True),
+                     db.Column('role', db.Integer, db.ForeignKey('role.id'), primary_key=True)
+                     )
 
 
 class User(db.Model):
@@ -101,6 +101,7 @@ class Role(db.Model):
     def __repr__(self):
         return 'Role %r' % self.name
 
+
 class Transactions(db.Model):
     __tablename__ = 'transactions'
     id = db.Column(db.Integer, primary_key=True)
@@ -112,6 +113,7 @@ class Transactions(db.Model):
 
     def __repr__(self):
         return 'Transaction %r' % self.id
+
 
 class Categories(db.Model):
     __tablename__ = 'categories'
